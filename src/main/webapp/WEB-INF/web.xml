@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		 xmlns="http://java.sun.com/xml/ns/javaee" 
+		 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" 
+		 id="WebApp_ID" version="3.0">
+		 
+	<!-- 加载spring容器 -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoader</listener-class>
+	</listener>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:spring/applicationContext-*.xml</param-value>
+	</context-param>
+	
+	<!-- 配置springMVC的前端控制器 -->
+	<servlet-mapping>
+  	<servlet-name>Dispatcher</servlet-name>
+  	<!-- <url-pattern>使用/来匹配可以实现RESTFUL风格的url 但是对于静态文件的配置不让DispathcerServelet处理-->
+  	<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	
+</web-app>

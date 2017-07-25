@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    
+    <!-- 配置连接池 使用c3p0 -->
+	<context:property-placeholder location="classpath:db.properties"/>
+	<!-- 数据源使用c3p0连接池 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="${jdbc.driver}"/>
+		<property name="jdbcUrl" value="${jdbc.url}"></property>
+		<property name="user" value="${jdbc.username}"></property>
+		<property name="password" value="${jdbc.password}"/>
+		<property name="initialPoolSize" value="3" />  
+        <property name="minPoolSize" value="0" />  
+        <property name="maxPoolSize" value="15" />  
+        <property name="acquireIncrement" value="5" />  
+        <property name="maxIdleTime" value="10" />  
+        <property name="maxStatements" value="100" />  
+        <property name="numHelperThreads" value="3"></property>    
+	</bean>
+	
+	<!-- 配置sqlSessionFactory -->
+		<!-- 配置sqlSessionFactory -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 加载mybatis配置文件  -->
+		<property name="configLocation" value="classpath:mybatis/SqlMapConfig.xml"></property>
+		<!-- 数据源 -->
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	<!-- 配置mapper的扫描器 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 指定扫描的包名 
+			扫描多个包使用,分隔
+		-->
+		<property name="basePackage" value="cn.card.dao"/>
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+	</bean>
+	
+</beans>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE configuration  
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-config.dtd">  
+<configuration> 
+
+	<!-- 使用spring整合的扫描包  所以不用配置mapper -->
+	
+	<!-- 批量扫描包并赋予别名 -->
+	<typeAliases>
+		<package name="cn.card.domain"/>
+	</typeAliases>
+	
+</configuration>

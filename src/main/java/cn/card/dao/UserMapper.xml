@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+<!-- mapper.java接口地址 -->
+<mapper namespace="cn.card.dao.UserMapper">
+	
+	<!-- 定义SQL片段 -->
+	<sql id="query_where_username">
+		<if test="userCustom!=null">
+			<if test="userCustom.username!=null and userCustom.username!=''">
+				user.username=#{userCustom.username}
+			</if>
+		</if>
+	</sql>
+	
+	<select id="findUserByUserName" parameterType="cn.card.domain.UserQueryVo" 
+			resultType="cn.card.domain.UserCustom">
+		SELECT * FROM user
+		<where>
+			<include refid="query_where_username"/>
+		</where>
+	</select>
+
+	<!-- 新建用户  -->
+	<insert id="createNewUser" parameterType="cn.card.domain.UserQueryVo">
+		INSERT INTO user(username, password) VALUES (#{userCustom.username},#{userCustom.password})
+	</insert>
+	
+	<!-- 更新用户 -->
+	<update id="updateUserInfo" parameterType="cn.card.domain.UserQueryVo">
+		UPDATE user SET name=#{userCustom.name}, occupation_list=#{userCustom.occupation_list},
+						email_list=#{userCustom.email_list}, phone_list=#{userCustom.phone_list},
+						address_list=#{userCustom.address_list}
+		<where>
+			<include refid="query_where_username"></include>
+		</where>
+	</update>
+	
+</mapper>

@@ -43,7 +43,7 @@ public class UserCustom extends User{
 	
 	@Override
 	public String toString() {
-		return "UserCustom [occupation=" + occupation + ", address=" + address + ", emai=" + email + ", phone=" + phone
+		return super.toString() + "UserCustom [occupation=" + occupation + ", address=" + address + ", emai=" + email + ", phone=" + phone
 				+ "]";
 	}
 	

@@ -13,11 +13,16 @@ import cn.card.utils.Transfer;
 public class UserServiceImpl implements UserService {
 	
 	@Autowired
-	private UserMapper UserMapper;
+	private UserMapper userMapper;
 
 	@Override
 	public UserCustom findUserByUserName(UserQueryVo userQueryVo) throws Exception {
-		UserCustom userCustom = UserMapper.findUserByUserName(userQueryVo);
+		
+		UserCustom userCustom = userMapper.findUserByUserName(userQueryVo);
+		//用户不存在 抛出用户不存在的异常
+		if (userCustom == null) {
+			throw new UserNotFoundException();
+		}
 		Transfer.transferToList(userCustom);
 		return userCustom;
 	}
@@ -25,14 +30,13 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void createNewUser(UserQueryVo userQueryVo) throws Exception {
 		Transfer.transferToString(userQueryVo.getUserCustom());
-		UserMapper.createNewUser(userQueryVo);
+		userMapper.createNewUser(userQueryVo);
 	}
 
 	@Override
 	public void updateUserInfo(UserQueryVo userQueryVo) throws Exception {
-		
 		Transfer.transferToString(userQueryVo.getUserCustom());
-		UserMapper.updateUserInfo(userQueryVo);
+		userMapper.updateUserInfo(userQueryVo);
 	}
 
 }

@@ -4,6 +4,12 @@ import org.springframework.http.HttpStatus;
 
 import cn.card.exception.baseException.BaseException;
 
+/**
+ * 
+ * Description: 查找用户不存在的异常类
+ * @author z
+ * @date 2017年7月26日
+ */
 public class UserNotFoundException extends BaseException{
 
 	/**

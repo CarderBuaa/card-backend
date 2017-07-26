@@ -6,7 +6,7 @@ import cn.card.exception.baseException.BaseException;
 
 /**
  * 
- * Description: 查找的用户不存在
+ * Description: 查找的用户已存在
  * @author z
  * @date 2017年7月26日
  */

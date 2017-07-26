@@ -10,7 +10,7 @@ import cn.card.domain.UserQueryVo;
 
 public class UserMapperTest {
 	
-	ApplicationContext applicationContext; 
+	private ApplicationContext applicationContext;
 
 	@Before
 	public void setUp() throws Exception {
@@ -39,7 +39,7 @@ public class UserMapperTest {
 		UserQueryVo userQueryVo = new UserQueryVo();
 		UserCustom userCustom = new UserCustom();
 		
-		userCustom.setUsername("a555555");
+		userCustom.setUsername("a55555");
 		userCustom.setPassword("aa5665");
 		
 		userQueryVo.setUserCustom(userCustom);
@@ -56,10 +56,11 @@ public class UserMapperTest {
 		UserCustom userCustom = new UserCustom();
 		
 		userCustom.setUsername("a555555");
-		userCustom.setAddress_list("hhhhhhh;hhh");
+		userCustom.setAddress_list("hhhhhhh;1111");
 		userQueryVo.setUserCustom(userCustom);
 		
 		userMapper.updateUserInfo(userQueryVo);
+
 	}
 
 }

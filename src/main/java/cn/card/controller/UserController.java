@@ -36,7 +36,7 @@ public class UserController {
 		
 	}
 	
-	@RequestMapping(value="/user/accesstoken")
+	@RequestMapping(value="/user/accesstoken",method=RequestMethod.POST)
 	public void getAccessToken(@RequestBody UserQueryVo userQueryVo) {
 		
 	}

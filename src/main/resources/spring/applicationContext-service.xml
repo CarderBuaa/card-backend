@@ -8,6 +8,7 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
-
+	
+	<!-- 在spring中注册userService -->
 	<bean id="userService" class="cn.card.service.impl.UserServiceImpl"></bean>        
 </beans>

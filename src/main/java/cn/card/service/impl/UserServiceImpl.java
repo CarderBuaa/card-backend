@@ -5,7 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import cn.card.dao.UserMapper;
 import cn.card.domain.UserCustom;
 import cn.card.domain.UserQueryVo;
+import cn.card.exception.UserExistException;
+import cn.card.exception.UserNotFoundException;
 import cn.card.service.UserService;
+import cn.card.utils.Transfer;
 
 public class UserServiceImpl implements UserService {
 	
@@ -14,20 +17,22 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserCustom findUserByUserName(UserQueryVo userQueryVo) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		UserCustom userCustom = UserMapper.findUserByUserName(userQueryVo);
+		Transfer.transferToList(userCustom);
+		return userCustom;
 	}
 
 	@Override
 	public void createNewUser(UserQueryVo userQueryVo) throws Exception {
-		// TODO Auto-generated method stub
-		
+		Transfer.transferToString(userQueryVo.getUserCustom());
+		UserMapper.createNewUser(userQueryVo);
 	}
 
 	@Override
 	public void updateUserInfo(UserQueryVo userQueryVo) throws Exception {
-		// TODO Auto-generated method stub
 		
+		Transfer.transferToString(userQueryVo.getUserCustom());
+		UserMapper.updateUserInfo(userQueryVo);
 	}
 
 }

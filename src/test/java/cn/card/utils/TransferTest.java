@@ -3,17 +3,12 @@ package cn.card.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import cn.card.domain.UserCustom;
 
 public class TransferTest {
 
-	@Before
-	public void setUp() throws Exception {
-		
-	}
 
 	@Test
 	public void testTransferToList() {

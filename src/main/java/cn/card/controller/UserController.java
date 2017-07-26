@@ -1,14 +1,18 @@
 package cn.card.controller;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.ibatis.annotations.ResultMap;
 import org.junit.runner.Request;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import cn.card.domain.UserQueryVo;
 import cn.card.service.UserService;
@@ -26,8 +30,10 @@ public class UserController {
 	private UserService userService;
 	
 	@RequestMapping(value="/user",method=RequestMethod.POST)
-	public void createUserController(@RequestBody UserQueryVo userQueryVo){
+	public void createUserController(@RequestBody UserQueryVo userQueryVo,
+									HttpServletResponse response){
 		
+		response.setStatus(200);
 	}
 	
 	@RequestMapping(value="/user/{username}",method= {RequestMethod.GET, RequestMethod.PUT})

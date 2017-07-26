@@ -17,13 +17,14 @@
     	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
     		<!-- 配置数据源 -->
     		<property name="dataSource" ref="dataSource"></property>
-    	
     	</bean>
     	
     	<!-- 通知 -->
     	<tx:advice id="txAdvice" transaction-manager="transactionManager">
     		<tx:attributes>
     			<!-- 传播行为 -->
+    			<tx:method name="create*" propagation="REQUIRED"/>
+    			<tx:method name="update*" propagation="REQUIRED"/>
     			<tx:method name="find*" propagation="SUPPORTS" read-only="true"/>
     		</tx:attributes>
     	</tx:advice>

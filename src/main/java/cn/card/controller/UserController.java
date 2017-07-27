@@ -1,5 +1,6 @@
 package cn.card.controller;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,7 +27,8 @@ import cn.card.service.UserService;
  * @author z
  * @date 2017年7月26日
  */
-@Controller
+
+@Controller("userController")
 public class UserController {
 
 	@Autowired
@@ -62,7 +64,7 @@ public class UserController {
 		UserQueryVo userQueryVo = new UserQueryVo();
 		userQueryVo.setUserCustom(userCustom);
 		//对GET请求的响应
-		if (request.getMethod() == "GET") {
+		if (request.getMethod().equals("GET")) {
 			return userService.findUserByUserName(userQueryVo);
 		}
 		//对PUT请求的响应

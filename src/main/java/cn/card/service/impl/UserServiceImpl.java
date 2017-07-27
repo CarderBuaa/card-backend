@@ -9,9 +9,11 @@ import cn.card.exception.UserExistException;
 import cn.card.exception.UserNotFoundException;
 import cn.card.service.UserService;
 import cn.card.utils.Transfer;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.stereotype.Service;
 
 public class UserServiceImpl implements UserService {
-	
+
 	@Autowired
 	private UserMapper userMapper;
 

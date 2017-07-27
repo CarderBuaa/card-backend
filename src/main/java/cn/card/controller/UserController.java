@@ -27,8 +27,7 @@ import cn.card.service.UserService;
  * @author z
  * @date 2017年7月26日
  */
-
-@Controller("userController")
+@Controller
 public class UserController {
 
 	@Autowired

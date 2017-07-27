@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+        
+        <!-- 
+       	同时还有很多的参数绑定方法，如JSON的转换解析器等
+       	-->
+       <mvc:annotation-driven/>
+
+       <context:component-scan base-package="cn.card.controller"/>
+
+    <!-- 全局异常处理器 -->
+        <bean class="cn.card.exception.ExceptionHandler"/>
+        
+        <!-- 对静态资源的访问 -->
+        <!--
+		<mvc:resources mapping="/css/**" location="/css/" />  
+		<mvc:resources mapping="/image/**" location="/image/" />  
+		<mvc:resources mapping="/js/**" location="/js/" />   
+		以上的配置：css，image，js放置在webapp目录下，页面中使用时：localhost:8080/css/aaa.css
+		-->
+</beans>

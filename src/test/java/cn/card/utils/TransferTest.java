@@ -3,6 +3,7 @@ package cn.card.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.card.utils.TransferData.Transfer;
 import org.junit.Test;
 
 import cn.card.domain.UserCustom;

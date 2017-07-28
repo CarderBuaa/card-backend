@@ -12,18 +12,18 @@
 	<!-- 加载数据库连接文件 -->
 	<context:property-placeholder location="classpath:db.properties"/>
 	<!-- 数据源使用c3p0连接池 -->
-	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
 		<property name="driverClass" value="${jdbc.driver}"/>
 		<property name="jdbcUrl" value="${jdbc.url}"></property>
 		<property name="user" value="${jdbc.username}"></property>
 		<property name="password" value="${jdbc.password}"/>
-		<property name="initialPoolSize" value="3" />  
-        <property name="minPoolSize" value="0" />  
-        <property name="maxPoolSize" value="15" />  
-        <property name="acquireIncrement" value="5" />  
-        <property name="maxIdleTime" value="10" />  
-        <property name="maxStatements" value="100" />  
-        <property name="numHelperThreads" value="3"></property>    
+		<property name="initialPoolSize" value="3" />
+        <property name="minPoolSize" value="10" />
+        <property name="maxPoolSize" value="30" />
+        <property name="acquireIncrement" value="2" />
+        <property name="maxIdleTime" value="10000" />
+		<property name="idleConnectionTestPeriod" value="60"/>
+
 	</bean>
 	
 	<!-- 配置sqlSessionFactory -->

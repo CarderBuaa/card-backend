@@ -1,4 +1,4 @@
-package cn.card.utils;
+package cn.card.utils.Qrcode;
 
 import cn.card.domain.UserCustom;
 import com.google.zxing.qrcode.encoder.QRCode;

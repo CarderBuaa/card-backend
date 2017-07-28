@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
- * Description: 用于安全验证
+ * Description: 用于安全验证,将token存储到JVM内存中
  * Created by z on 2017/7/27.
  */
 public class TokenManagerImpl implements TokenManager{
@@ -18,8 +18,9 @@ public class TokenManagerImpl implements TokenManager{
 
     @Override
     public String createToken(String username) {
-        String token = UUID.randomUUID().toString();
 
+        String token = UUID.randomUUID().toString();
+        //将token放到内存中
         tokenMap.put(token, username);
         return token;
     }
@@ -27,6 +28,6 @@ public class TokenManagerImpl implements TokenManager{
     @Override
     public boolean checkToken(String token) {
 
-        return !StringUtils.isEmptyOrWhitespaceOnly(token) && tokenMap.containsKey(token);
+        return !StringUtils.isNullOrEmpty(token) && tokenMap.containsKey(token);
     }
 }

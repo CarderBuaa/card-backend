@@ -5,6 +5,6 @@ package cn.card.utils.access_token;
  */
 public interface TokenManager {
 
-    public String createToken(String username);
-    public boolean checkToken(String token);
+    String createToken(String username);
+    boolean checkToken(String token);
 }

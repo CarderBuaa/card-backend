@@ -11,6 +11,7 @@
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
 			<param-value>classpath:spring/*.xml</param-value>
+
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -20,6 +21,12 @@
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 
+	<!-- 配置RequestContextListener监听器 使其能够获得当前访问的request -->
+	<listener>
+		<listener-class>
+			org.springframework.web.context.request.RequestContextListener
+		</listener-class>
+	</listener>
 
 	
 </web-app>

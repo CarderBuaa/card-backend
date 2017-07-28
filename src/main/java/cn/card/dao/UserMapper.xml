@@ -8,11 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<!-- 定义SQL片段 -->
 	<sql id="query_where_username">
-		<if test="userCustom!=null">
-			<if test="userCustom.username!=null and userCustom.username!=''">
-				user.username=#{userCustom.username}
-			</if>
-		</if>
+		user.username=#{userCustom.username}
 	</sql>
 	
 	<select id="findUserByUserName" parameterType="cn.card.domain.UserQueryVo" 

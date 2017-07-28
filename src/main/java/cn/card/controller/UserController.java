@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cn.card.domain.User;
 import org.apache.ibatis.annotations.ResultMap;
 import org.junit.runner.Request;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +31,19 @@ import cn.card.service.UserService;
 @Controller
 public class UserController {
 
-	@Autowired
+
 	private UserService userService;
-	
+
+	@Autowired
+	public void setUserService(UserService userService) {
+		this.userService = userService;
+	}
+
 	@RequestMapping(value="/user",method=RequestMethod.POST)
 	public void createUserController(@RequestBody UserCustom userCustom,
+									 HttpServletRequest request,
 									HttpServletResponse response) throws Exception{
-		
+
 		//新建查询对象
 		UserQueryVo userQueryVo = new UserQueryVo();
 		userQueryVo.setUserCustom(userCustom);
@@ -54,26 +61,32 @@ public class UserController {
 		
 	}
 	
-	@RequestMapping(value="/user/{username}",method= {RequestMethod.GET, RequestMethod.PUT})
-	public @ResponseBody UserCustom getAndEditUserController(@PathVariable("username") String username, 
+	@RequestMapping(value="/user/{username}",method= RequestMethod.PUT)
+	public @ResponseBody UserCustom editUserController(@PathVariable("username") String username,
 			@RequestBody UserCustom userCustom, HttpServletRequest request) throws Exception {
 		
 		//新建查询对象
 		userCustom.setUsername(username);
 		UserQueryVo userQueryVo = new UserQueryVo();
 		userQueryVo.setUserCustom(userCustom);
-		//对GET请求的响应
-		if (request.getMethod().equals("GET")) {
-			return userService.findUserByUserName(userQueryVo);
-		}
+
 		//对PUT请求的响应
-		else {
-			userService.findUserByUserName(userQueryVo);
-			userService.updateUserInfo(userQueryVo);
-			return null;
-		}
+		userService.findUserByUserName(userQueryVo);
+		userService.updateUserInfo(userQueryVo);
+		return null;
+
 	}
-	
+
+	@RequestMapping(value="/user/{username}",method = RequestMethod.GET)
+	public @ResponseBody UserCustom getUserController(@PathVariable("username") String username) throws Exception {
+		//新建查询对象
+		UserCustom userCustom = new UserCustom();
+		userCustom.setUsername(username);
+		UserQueryVo userQueryVo = new UserQueryVo();
+		userQueryVo.setUserCustom(userCustom);
+		return userService.findUserByUserName(userQueryVo);
+	}
+
 	@RequestMapping(value="/user/accesstoken",method=RequestMethod.POST)
 	public @ResponseBody String getAccessToken(@RequestBody UserCustom userCustom) {
 		

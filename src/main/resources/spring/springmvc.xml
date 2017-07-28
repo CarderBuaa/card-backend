@@ -11,15 +11,21 @@
         http://www.springframework.org/schema/context 
         http://www.springframework.org/schema/context/spring-context-4.3.xsd">
         
-        <!-- 
-       	同时还有很多的参数绑定方法，如JSON的转换解析器等
-       	-->
-       <mvc:annotation-driven/>
+    <!--
+       同时还有很多的参数绑定方法，如JSON的转换解析器等
+    -->
+    <mvc:annotation-driven/>
 
-       <context:component-scan base-package="cn.card.controller"/>
+    <context:component-scan base-package="cn.card.controller"/>
+
+    <bean id="securityAspect" class="cn.card.utils.access_token.TokenManagerImpl">
+    </bean>
+
+    <!-- 静态资源默认servlet配置 加入对静态资源的处理：js，css，gif，png 允许使用"/"做整体映射 -->
+    <mvc:default-servlet-handler />
 
     <!-- 全局异常处理器 -->
-        <bean class="cn.card.exception.ExceptionHandler"/>
+    <bean class="cn.card.exception.ExceptionHandler"/>
         
         <!-- 对静态资源的访问 -->
         <!--

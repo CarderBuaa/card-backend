@@ -12,12 +12,24 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class CardController {
 
     @RequestMapping(value = "/card",method = RequestMethod.POST)
-    public void GenerateCard(){
+    public void generateCard(){
 
     }
 
-    @RequestMapping(value = "/card/{card_id}",method = {RequestMethod.DELETE, RequestMethod.GET, RequestMethod.PUT})
-    public void Card(@PathVariable("card_id") String card_id){
+    @RequestMapping(value = "/card/{card_id}",method = RequestMethod.DELETE)
+    public void deleteCard(@PathVariable("card_id") String card_id){
 
     }
+
+    @RequestMapping(value = "/card/{card_id}", method = RequestMethod.GET)
+    public void getCard(@PathVariable("card_id") String card_id){
+
+    }
+
+    @RequestMapping(value = "/card/{card_id}", method = RequestMethod.PUT)
+    public void putCard(@PathVariable("card_id") String card_id){
+
+    }
+
 }
+

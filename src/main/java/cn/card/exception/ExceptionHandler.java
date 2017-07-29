@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -32,7 +33,7 @@ public class ExceptionHandler implements HandlerExceptionResolver{
             message = ex.getMessage();
             //填充HTTPStatus到response中
             response.setStatus(((BaseException) ex).getStatus().value());
-            System.out.print(response.getStatus());
+
             //填充message字符串到response的JSON中
             JSONObject jsonObj = new JSONObject();
             jsonObj.put("message", message);
@@ -44,6 +45,23 @@ public class ExceptionHandler implements HandlerExceptionResolver{
                 e.printStackTrace();
             }
         }
+        //不是系统自定义异常，返回位置错误
+        else{
+            message = "未知错误";
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+
+            //填充message字符串到response的JSON中
+            JSONObject jsonObj = new JSONObject();
+            jsonObj.put("message", message);
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json; charset=utf-8");
+            try {
+                response.getWriter().append(jsonObj.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         return mv;
     }
 

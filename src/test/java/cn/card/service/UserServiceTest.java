@@ -68,4 +68,19 @@ public class UserServiceTest {
 		userService.updateUserInfo(userQueryVo);
 	}
 
+	@Test
+	public void testfind2() throws Exception {
+		UserService userService = (UserService) applicationContext.getBean("userService");
+
+		UserQueryVo userQueryVo = new UserQueryVo();
+		UserCustom userCustom = new UserCustom();
+
+		userCustom.setUsername("a55555");
+		userCustom.setPassword("aa5665");
+
+		userQueryVo.setUserCustom(userCustom);
+
+		System.out.print(userService.findUserByUsernameAndPassword(userQueryVo));
+	}
+
 }

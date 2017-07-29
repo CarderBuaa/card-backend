@@ -27,6 +27,7 @@ public class UserMapperTest {
 		userQueryVo.setUserCustom(new UserCustom());
 		userQueryVo.getUserCustom().setUsername("a502982165");
 
+
 		UserCustom userCustom = userMapper.findUserByUserName(userQueryVo);
 
 		System.out.println(userCustom);
@@ -61,6 +62,21 @@ public class UserMapperTest {
 
 		userMapper.updateUserInfo(userQueryVo);
 
+	}
+
+	@Test
+	public void testfind2() throws Exception {
+		UserMapper userService = (UserMapper) applicationContext.getBean("userMapper");
+
+		UserQueryVo userQueryVo = new UserQueryVo();
+		UserCustom userCustom = new UserCustom();
+
+		userCustom.setUsername("a55555");
+		userCustom.setPassword("aa5665");
+
+		userQueryVo.setUserCustom(userCustom);
+
+		System.out.print(userService.findUserByUsernameAndPassword(userQueryVo));
 	}
 
 }

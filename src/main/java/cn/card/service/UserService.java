@@ -5,9 +5,11 @@ import cn.card.domain.UserQueryVo;
 
 public interface UserService {
 	//查询用户
-	public UserCustom findUserByUserName(UserQueryVo userQueryVo) throws Exception;
+	UserCustom findUserByUserName(UserQueryVo userQueryVo) throws Exception;
 	//新建用户
-	public void createNewUser(UserQueryVo userQueryVo) throws Exception;
+	void createNewUser(UserQueryVo userQueryVo) throws Exception;
 	//修改用户信息
-	public void updateUserInfo(UserQueryVo userQueryVo) throws Exception;
+	void updateUserInfo(UserQueryVo userQueryVo) throws Exception;
+	//根据账号和密码查询用户
+	UserCustom findUserByUsernameAndPassword(UserQueryVo userQueryVo) throws Exception;
 }

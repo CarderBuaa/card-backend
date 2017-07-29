@@ -26,7 +26,6 @@ public class UserServiceImpl implements UserService {
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	@Override
 	public UserCustom findUserByUserName(UserQueryVo userQueryVo) throws Exception {
-		
 		UserCustom userCustom = userMapper.findUserByUserName(userQueryVo);
 		Transfer.transferToList(userCustom);
 		return userCustom;
@@ -47,5 +46,15 @@ public class UserServiceImpl implements UserService {
 		Transfer.transferToString(userQueryVo.getUserCustom());
 		userMapper.updateUserInfo(userQueryVo);
 	}
+
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	@Override
+	public UserCustom findUserByUsernameAndPassword(UserQueryVo userQueryVo) throws Exception {
+		UserCustom userCustom = userMapper.findUserByUsernameAndPassword(userQueryVo);
+		Transfer.transferToList(userCustom);
+		return userCustom;
+	}
+
 
 }

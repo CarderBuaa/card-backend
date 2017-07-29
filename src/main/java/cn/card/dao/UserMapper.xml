@@ -19,6 +19,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</where>
 	</select>
 
+	<!-- 根据当前用户名和用户密码查找用户 -->
+	<select id="findUserByUsernameAndPassword" parameterType="cn.card.domain.UserQueryVo"
+			resultType="cn.card.domain.UserCustom">
+		SELECT * FROM user
+		WHERE user.username=#{userCustom.username} AND user.password=#{userCustom.password}
+	</select>
+
 	<!-- 新建用户  -->
 	<insert id="createNewUser" parameterType="cn.card.domain.UserQueryVo">
 		INSERT INTO user(username, password) VALUES (#{userCustom.username},#{userCustom.password})
@@ -33,5 +40,4 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<include refid="query_where_username"></include>
 		</where>
 	</update>
-	
 </mapper>

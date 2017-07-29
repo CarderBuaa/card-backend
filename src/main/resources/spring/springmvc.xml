@@ -31,6 +31,14 @@
 		以上的配置：css，image，js放置在webapp目录下，页面中使用时：localhost:8080/css/aaa.css
 		-->
 
+    <!-- 设置文件上传 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize">
+            <!-- 设置最大文件上传尺寸为5M -->
+            <value>5242880</value>
+        </property>
+    </bean>
+
     <!-- 配置后端数据校验器 -->
     <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
         <!-- 指定校验器 -->

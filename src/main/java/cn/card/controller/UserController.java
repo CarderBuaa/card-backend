@@ -87,8 +87,8 @@ public class UserController {
 	}
 
 	@RequestMapping(value="/user/{username}",method= RequestMethod.PUT)
-	public void editUserController(@PathVariable("username") String username, @RequestBody UserCustom userCustom)
-			throws Exception {
+	public void editUserController(@PathVariable("username") String username, @RequestBody UserCustom userCustom,
+				HttpServletResponse response) throws Exception {
 
 		//对中文路径编码问题的处理
 		username = new String(username.getBytes("ISO-8859-1"), "utf8");
@@ -107,6 +107,7 @@ public class UserController {
 		}
 		//更新用户信息
 		userService.updateUserInfo(userQueryVo);
+		response.setStatus(HttpStatus.OK.value());
 	}
 
 	@RequestMapping(value="/user/{username}",method = RequestMethod.GET)
@@ -134,8 +135,17 @@ public class UserController {
 	//登录方法不用检查Token
 	@IgnoreSecurity
 	@RequestMapping(value="/user/accesstoken",method=RequestMethod.POST)
-	public void getAccessToken(@RequestBody UserCustom userCustom, HttpServletResponse response)
+	public void getAccessToken(@Validated @RequestBody UserCustom userCustom, BindingResult result,
+							   HttpServletResponse response)
 			throws Exception {
+
+		//后端验证用户名不为空
+		if(result.hasErrors()){
+			List<ObjectError> allErrors = result.getAllErrors();
+			for (ObjectError error: allErrors) {
+				throw new UserNameisNull(error.getDefaultMessage());
+			}
+		}
 
 		//生成密码的MD5值并保存
 		userCustom.setPassword(MD5.getMD5(userCustom.getPassword()));
@@ -155,7 +165,6 @@ public class UserController {
 		String token = tokenManager.createToken(userCustom.getUsername());
 
 		//将token变成JSON放入response中
-
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("token", token);
 		response.setCharacterEncoding("UTF-8");

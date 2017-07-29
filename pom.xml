@@ -172,6 +172,12 @@
     	<version>3.3.0</version>
 	</dependency>
 
+	<!-- 后端校验相关包 -->
+	<dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate-validator</artifactId>
+		<version>5.4.1.Final</version>
+	</dependency>
   </dependencies>
   <build>
     <finalName>ssm</finalName>

@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import cn.card.exception.PawordWrongException;
+import cn.card.exception.UserNameisNull;
 import cn.card.exception.UserNotFoundException;
 import cn.card.utils.GenerateMD5.MD5;
 import cn.card.utils.IgnoreSecurity.IgnoreSecurity;
@@ -12,6 +13,9 @@ import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +28,7 @@ import cn.card.exception.UserExistException;
 import cn.card.service.UserService;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * 
@@ -52,7 +57,15 @@ public class UserController {
 	//注册方法不需要检查token
 	@IgnoreSecurity
 	@RequestMapping(value="/user",method=RequestMethod.POST)
-	public void createUserController(@RequestBody UserCustom userCustom, HttpServletResponse response) throws Exception{
+	public void createUserController(@Validated @RequestBody UserCustom userCustom, BindingResult result,
+									 HttpServletResponse response) throws Exception{
+
+		if(result.hasErrors()){
+			List<ObjectError> allErrors = result.getAllErrors();
+			for (ObjectError error: allErrors) {
+				throw new UserNameisNull(error.getDefaultMessage());
+			}
+		}
 
 		//新建查询对象
 		UserQueryVo userQueryVo = new UserQueryVo();

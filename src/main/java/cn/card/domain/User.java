@@ -1,5 +1,7 @@
 package cn.card.domain;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * 
  * Description: user的POJO类
@@ -7,7 +9,9 @@ package cn.card.domain;
  * @date 2017年7月25日
  */
 public class User {
-	
+
+	//配置用户名的validator
+	@NotNull(message = "{user.usernameIsNull}")
 	private String username;
 	private String password;
 	private String name;

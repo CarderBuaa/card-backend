@@ -13,7 +13,7 @@
     <!--
        同时还有很多的参数绑定方法，如JSON的转换解析器等
     -->
-    <mvc:annotation-driven/>
+    <mvc:annotation-driven validator="validator"/>
 
     <context:component-scan base-package="cn.card.controller"/>
 
@@ -30,4 +30,25 @@
 		<mvc:resources mapping="/js/**" location="/js/" />   
 		以上的配置：css，image，js放置在webapp目录下，页面中使用时：localhost:8080/css/aaa.css
 		-->
+
+    <!-- 配置后端数据校验器 -->
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+        <!-- 指定校验器 -->
+        <property name="providerClass" value="org.hibernate.validator.HibernateValidator"/>
+        <!-- 指定校验信息源文件 -->
+        <property name="validationMessageSource" ref="messageResource"/>
+    </bean>
+
+    <!-- 设置校验信息源文件 -->
+    <bean id="messageResource"
+          class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>classpath:CustomValidationMessages</value>
+            </list>
+        </property>
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="cacheSeconds" value="120"/>
+    </bean>
+
 </beans>

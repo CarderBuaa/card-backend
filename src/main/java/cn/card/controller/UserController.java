@@ -1,6 +1,5 @@
 package cn.card.controller;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import cn.card.exception.PawordWrongException;
@@ -9,6 +8,7 @@ import cn.card.exception.UserNotFoundException;
 import cn.card.utils.GenerateMD5.MD5;
 import cn.card.utils.IgnoreSecurity.IgnoreSecurity;
 import cn.card.utils.access_token.TokenManager;
+import cn.card.utils.propertyReader.PropertyReader;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +27,7 @@ import cn.card.domain.UserQueryVo;
 import cn.card.exception.UserExistException;
 import cn.card.service.UserService;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -60,6 +61,7 @@ public class UserController {
 	public void createUserController(@Validated @RequestBody UserCustom userCustom, BindingResult result,
 									 HttpServletResponse response) throws Exception{
 
+		//没想到好的写法 囧
 		if(result.hasErrors()){
 			List<ObjectError> allErrors = result.getAllErrors();
 			for (ObjectError error: allErrors) {
@@ -83,6 +85,21 @@ public class UserController {
 		
 		//创建用户
 		userService.createNewUser(userQueryVo);
+
+		//在用户注册时候就为用户创建自己的文件夹
+		//更改做法  创建一个虚拟目录
+
+		//在设置的上传路径下创建一个上传文件夹路径
+		String upload = PropertyReader.getUploadPath();
+		File uploads = new File(upload);
+		if(!uploads.exists()){
+			uploads.mkdir();
+		}
+
+		//为每个用户生成自己的文件夹 保存生成的名片文件
+		String userPath = upload + "/" +userCustom.getUsername();
+		new File(userPath).mkdir();
+
 		response.setStatus(HttpStatus.OK.value());
 	}
 
@@ -136,10 +153,9 @@ public class UserController {
 	@IgnoreSecurity
 	@RequestMapping(value="/user/accesstoken",method=RequestMethod.POST)
 	public void getAccessToken(@Validated @RequestBody UserCustom userCustom, BindingResult result,
-							   HttpServletResponse response)
-			throws Exception {
+							   HttpServletResponse response) throws Exception {
 
-		//后端验证用户名不为空
+		//验证没想到好的写法 囧
 		if(result.hasErrors()){
 			List<ObjectError> allErrors = result.getAllErrors();
 			for (ObjectError error: allErrors) {

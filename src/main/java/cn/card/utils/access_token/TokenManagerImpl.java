@@ -30,4 +30,9 @@ public class TokenManagerImpl implements TokenManager{
 
         return !StringUtils.isNullOrEmpty(token) && tokenMap.containsKey(token);
     }
+
+    @Override
+    public String getUsername(String token) {
+        return tokenMap.get(token);
+    }
 }

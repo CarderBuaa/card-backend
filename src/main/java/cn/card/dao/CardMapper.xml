@@ -13,8 +13,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</insert>
 
 	<!-- 用于在用户信息上传后向card表里更新数据 -->
-	<update id="update" parameterType="">
-		UPDATE
+	<update id="updateCardInfo" parameterType="cn.card.domain.CardQueryVo">
+		UPDATE card SET name=#{cardCustom.name}, occupation_list=#{cardCustom.occupation_list},
+						email_list=#{cardCustom.email_list}, phone_list=#{cardCustom.phone_list},
+						address_list=#{cardCustom.address_list}
+		WHERE id=#{cardCustom.id};
 	</update>
 
 	<!-- 用于查询所有的card信息记录 返回list -->

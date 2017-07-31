@@ -2,6 +2,7 @@ package cn.card.service;
 
 import cn.card.domain.UserCustom;
 import cn.card.domain.UserQueryVo;
+import org.springframework.stereotype.Service;
 
 public interface UserService {
 	//查询用户

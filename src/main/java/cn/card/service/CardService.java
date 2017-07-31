@@ -1,4 +1,4 @@
-package cn.card.dao;
+package cn.card.service;
 
 import cn.card.domain.CardCustom;
 import cn.card.domain.CardQueryVo;
@@ -6,10 +6,11 @@ import cn.card.domain.CardQueryVo;
 import java.util.List;
 
 /**
- * Description:用于card的新建和XXX
+ * Description:
  * Created by z on 2017/7/31.
  */
-public interface CardMapper {
+public interface CardService {
+
     //用于上传文件时向数据库中新建一个上传记录
     void createRecord(CardQueryVo cardQueryVo);
 

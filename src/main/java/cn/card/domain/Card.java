@@ -88,7 +88,8 @@ public class Card {
     @Override
     public String toString() {
         return "Card{" +
-                "username='" + username + '\'' +
+                "id=" + id +
+                ", username='" + username + '\'' +
                 ", background='" + background + '\'' +
                 ", name='" + name + '\'' +
                 ", occupation_list='" + occupation_list + '\'' +

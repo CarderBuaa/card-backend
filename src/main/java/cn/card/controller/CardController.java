@@ -2,6 +2,7 @@ package cn.card.controller;
 
 import cn.card.domain.UserCustom;
 import cn.card.exception.CardNotFoundException;
+import cn.card.service.CardService;
 import cn.card.utils.Qrcode.GenerateQRcode;
 import cn.card.utils.access_token.TokenManager;
 
@@ -26,7 +27,13 @@ import java.io.File;
 @Controller
 public class CardController {
 
+    private CardService cardService;
     private TokenManager tokenManager;
+
+    @Autowired
+    public void setCardService(CardService cardService) {
+        this.cardService = cardService;
+    }
 
     @Autowired
     public void setTokenManager(TokenManager tokenManager) {

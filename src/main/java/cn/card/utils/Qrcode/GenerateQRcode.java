@@ -17,7 +17,6 @@ import java.util.List;
  */
 public class GenerateQRcode {
 
-    public static Integer count = 1;
 
     /**
      *
@@ -93,9 +92,8 @@ public class GenerateQRcode {
      *
      * @param qrcode 存储在内存中的Qrcode
      * @param background 存储在内存中的背景图片
-     * @param path 保存文件的路径包含全路径
      */
-   public static void createImage(UserCustom userCustom,BufferedImage qrcode, BufferedImage background, String path){
+   public static BufferedImage createImage(UserCustom userCustom,BufferedImage qrcode, BufferedImage background){
 
        Graphics g = background.getGraphics();
        double x = (background.getWidth()-qrcode.getWidth()-50);
@@ -155,16 +153,8 @@ public class GenerateQRcode {
                height += 20;
            }
        }
-       //保存图片
-       String fileName1 = count + ".png";
-       File image = new File(path + "\\" +fileName1);
-       try {
-           ImageIO.write(background, "png", image);
-           count++;
-       }catch (Exception e)
-       {
-           e.printStackTrace();
-       }
+       //将内存中的生成的名片返回
+       return background;
    }
 
    @Test
@@ -186,7 +176,18 @@ public class GenerateQRcode {
        InputStream imagein = new FileInputStream("E:\\1.png");
        BufferedImage background = ImageIO.read(imagein);
 
-       GenerateQRcode.createImage(userCustom, image, background, "E:");
+       BufferedImage result = GenerateQRcode.createImage(userCustom, image, background);
+
+
+       //保存图片
+       String fileName1 = UUID.randomUUID() + ".png";
+       File image1 = new File("E:" + "\\" + fileName1);
+       try {
+           ImageIO.write(result, "png", image1);
+       }catch (Exception e)
+       {
+           e.printStackTrace();
+       }
 
    }
 

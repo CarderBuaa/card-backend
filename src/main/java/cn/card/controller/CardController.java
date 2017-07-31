@@ -1,5 +1,7 @@
 package cn.card.controller;
 
+import cn.card.domain.CardCustom;
+import cn.card.domain.CardQueryVo;
 import cn.card.domain.UserCustom;
 import cn.card.exception.CardNotFoundException;
 import cn.card.service.CardService;
@@ -22,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 
 /**
+ * Description: 控制名片行为的controller
  * Created by z on 2017/7/27.
  */
 @Controller
@@ -60,7 +63,7 @@ public class CardController {
             BufferedImage background = ImageIO.read(image.getInputStream());
 
             //在用户目录下生成名片
-            GenerateQRcode.createImage(userCustom, GenerateQRcode.createQrcode(userCustom), background, path);
+            GenerateQRcode.createImage(userCustom, GenerateQRcode.createQrcode(userCustom), background);
 
             response.setStatus(HttpStatus.OK.value());
         }
@@ -77,7 +80,7 @@ public class CardController {
         BufferedImage background = ImageIO.read(new FileInputStream(PropertyReader.getUploadPath() + "\\template.png"));
 
         //在用户目录下生成名片
-        GenerateQRcode.createImage(userCustom, GenerateQRcode.createQrcode(userCustom), background, path);
+        GenerateQRcode.createImage(userCustom, GenerateQRcode.createQrcode(userCustom), background);
 
         response.setStatus(HttpStatus.OK.value());
 
@@ -85,57 +88,66 @@ public class CardController {
 
     //用于删除生成的名片
     @RequestMapping(value = "/card/{card_id}",method = RequestMethod.DELETE)
-    public void deleteCard(HttpServletRequest request, HttpServletResponse response,
-                           @PathVariable("card_id") Integer card_id) throws Exception{
+    public void deleteCard(HttpServletResponse response, @PathVariable("card_id") Integer card_id) throws Exception{
 
-        //获取当前的认证用户的用户名
-        String token = request.getHeader("Access-Token");
-        String username = tokenManager.getUsername(token);
+        //设置查询条件
+        CardQueryVo cardQueryVo = new CardQueryVo();
+        CardCustom cardCustom = new CardCustom();
+        cardCustom.setId(card_id);
 
-        //获取当前用户的目录
-        String path = PropertyReader.getUploadPath()+ "\\" + username;
-
-        File card = new File(path + "\\" + card_id + ".png");
-
-        //如果找不到卡片则报错
-        if(!card.exists()){
+        CardCustom check = cardService.findCardByID(cardQueryVo);
+        //如果找不到ID的名片信息 就抛出名片不存在异常
+        if(check == null){
             throw new CardNotFoundException();
         }
 
-        //找到卡片则删除
-        card.delete();
-
+        //如果找到了对应的名片信息 删除名片
+        cardService.deleteCard(cardQueryVo);
         response.setStatus(HttpStatus.OK.value());
+
     }
 
     //用于获得生成的名片
     @RequestMapping(value = "/card/{card_id}", method = RequestMethod.GET)
-    public void getCard(HttpServletRequest request, HttpServletResponse response,
-                        @PathVariable("card_id") Integer card_id) throws Exception{
+    public void getCard(HttpServletResponse response, @PathVariable("card_id") Integer card_id) throws Exception{
+        //设置查询条件
+        CardQueryVo cardQueryVo = new CardQueryVo();
+        CardCustom cardCustom = new CardCustom();
+        cardCustom.setId(card_id);
 
-        //获取当前的认证用户的用户名
-        String token = request.getHeader("Access-Token");
-        String username = tokenManager.getUsername(token);
-
-        //获取当前用户的目录
-        String path = PropertyReader.getUploadPath()+ "\\" + username;
-
-        File card = new File(path + "\\" + card_id + ".png");
-
-        //如果找不到卡片则报错
-        if(!card.exists()){
+        CardCustom check = cardService.findCardByID(cardQueryVo);
+        //如果找不到ID的名片信息 就抛出名片不存在异常
+        if(check == null){
             throw new CardNotFoundException();
         }
+        //如果找到名片信息 则生成名片 并向前端返回
 
-        //如果找到图片，则向前端返回图片
+        //TODO:将内存中的名片信息转换成二进制流 像前端返回
+
         response.setStatus(HttpStatus.OK.value());
+
     }
 
     //用于修改已生成名片的数据
     @RequestMapping(value = "/card/{card_id}", method = RequestMethod.PUT)
-    public void putCard(HttpServletRequest request, HttpServletResponse response,
-                        @PathVariable("card_id") Integer card_id) throws Exception{
+    public void putCard(HttpServletResponse response, @PathVariable("card_id") Integer card_id) throws Exception{
 
+        //设置查询条件
+        CardQueryVo cardQueryVo = new CardQueryVo();
+        CardCustom cardCustom = new CardCustom();
+        cardCustom.setId(card_id);
+
+        CardCustom check = cardService.findCardByID(cardQueryVo);
+        //如果找不到ID的名片信息 就抛出名片不存在异常
+        if(check == null){
+            throw new CardNotFoundException();
+        }
+        //如果找到名片信息 则将前端返回的名片信息写进cardCustom中
+        //TODO:将名片信息修改
+
+        cardService.updateCardInfo(cardQueryVo);
+
+        response.setStatus(HttpStatus.OK.value());
 
     }
 

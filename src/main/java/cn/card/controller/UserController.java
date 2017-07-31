@@ -86,8 +86,7 @@ public class UserController {
 		//创建用户
 		userService.createNewUser(userQueryVo);
 
-		//在用户注册时候就为用户创建自己的文件夹
-		//更改做法  创建一个虚拟目录
+		//在第一个用户注册时候就为所有用户创建上传图片文件夹
 
 		//在设置的上传路径下创建一个上传文件夹路径
 		String upload = PropertyReader.getUploadPath();
@@ -95,10 +94,6 @@ public class UserController {
 		if(!uploads.exists()){
 			uploads.mkdir();
 		}
-
-		//为每个用户生成自己的文件夹 保存生成的名片文件
-		String userPath = upload + "\\" +userCustom.getUsername();
-		new File(userPath).mkdir();
 
 		response.setStatus(HttpStatus.OK.value());
 	}

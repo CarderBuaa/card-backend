@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+<!-- mapper.java接口地址 -->
+<mapper namespace="cn.card.dao.CardMapper">
+
+	<!-- 用于上传文件时向card表里插入数据 -->
+	<insert id="createRecord" parameterType="cn.card.domain.CardQueryVo">
+		INSERT INTO card(username, background)
+		VALUES (#{cardCustom.username}, #{cardCustom.background})
+	</insert>
+
+	<!-- 用于在用户信息上传后向card表里更新数据 -->
+	<update id="update" parameterType="">
+		UPDATE
+	</update>
+
+	<!-- 用于查询所有的card信息记录 返回list -->
+	<select id="findRecordList" parameterType="cn.card.domain.CardQueryVo" resultType="cn.card.domain.CardCustom">
+		SELECT * FROM card
+		WHERE username=#{cardCustom.username}
+	</select>
+</mapper>

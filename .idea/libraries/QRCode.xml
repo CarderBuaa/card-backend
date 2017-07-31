@@ -1,9 +1,9 @@
 <component name="libraryTable">
-  <library name="jmagick">
+  <library name="QRCode">
     <CLASSES>
-      <root url="jar://$USER_HOME$/Desktop/jmagick.jar!/" />
       <root url="jar://$USER_HOME$/Desktop/QRCode.jar!/" />
       <root url="jar://$USER_HOME$/Desktop/Qrcodeen.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/jmagick.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

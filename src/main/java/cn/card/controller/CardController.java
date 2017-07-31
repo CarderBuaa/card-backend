@@ -1,23 +1,18 @@
 package cn.card.controller;
 
-import cn.card.domain.User;
 import cn.card.domain.UserCustom;
-import cn.card.utils.IgnoreSecurity.IgnoreSecurity;
+import cn.card.exception.CardNotFoundException;
 import cn.card.utils.Qrcode.GenerateQRcode;
 import cn.card.utils.access_token.TokenManager;
 
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
-import java.util.Properties;
 
 import cn.card.utils.propertyReader.PropertyReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -40,20 +35,22 @@ public class CardController {
 
     //MultipartFile必须与input上来的id同名,不然无法绑定
     @RequestMapping(value = "/card",method = RequestMethod.POST)
-    public void generateCard(MultipartFile multipart, HttpServletResponse response,
-                             HttpServletRequest request, @RequestBody UserCustom userCustom) throws Exception{
+    public void generateCard(MultipartFile image,
+                             HttpServletResponse response,
+                             HttpServletRequest request,
+                             @RequestBody(required = false) UserCustom userCustom) throws Exception{
 
         //如果上传的时候附带了背景图片，则用背景图片生成名片
-        if (multipart != null){
+        if (image != null){
             //获取当前的认证用户的用户名
             String token = request.getHeader("Access-Token");
             String username = tokenManager.getUsername(token);
 
             //获取当前用户的目录
-            String path = PropertyReader.getUploadPath()+ "/" + username;
+            String path = PropertyReader.getUploadPath()+ "\\" + username;
 
             //将上传图片流加载如内存
-            BufferedImage background = ImageIO.read(multipart.getInputStream());
+            BufferedImage background = ImageIO.read(image.getInputStream());
 
             //在用户目录下生成名片
             GenerateQRcode.createImage(userCustom, GenerateQRcode.createQrcode(userCustom), background, path);
@@ -67,10 +64,10 @@ public class CardController {
         String username = tokenManager.getUsername(token);
 
         //获取当前用户的目录
-        String path = PropertyReader.getUploadPath()+ "/" + username;
+        String path = PropertyReader.getUploadPath()+ "\\" + username;
 
         //将本地默认图片流加载如内存
-        BufferedImage background = ImageIO.read(new FileInputStream(path + "template.png"));
+        BufferedImage background = ImageIO.read(new FileInputStream(PropertyReader.getUploadPath() + "\\template.png"));
 
         //在用户目录下生成名片
         GenerateQRcode.createImage(userCustom, GenerateQRcode.createQrcode(userCustom), background, path);
@@ -80,18 +77,50 @@ public class CardController {
     }
 
     @RequestMapping(value = "/card/{card_id}",method = RequestMethod.DELETE)
-    public void deleteCard(@PathVariable("card_id") String card_id){
+    public void deleteCard(HttpServletRequest request, HttpServletResponse response,
+                           @PathVariable("card_id") Integer card_id) throws Exception{
 
+        //获取当前的认证用户的用户名
+        String token = request.getHeader("Access-Token");
+        String username = tokenManager.getUsername(token);
+
+        //获取当前用户的目录
+        String path = PropertyReader.getUploadPath()+ "\\" + username;
+
+        File card = new File(path + "\\" + card_id + ".png");
+
+        //如果找不到卡片则报错
+        if(!card.exists()){
+            throw new CardNotFoundException();
+        }
+
+        //找到卡片则删除
+        card.delete();
+
+        response.setStatus(HttpStatus.OK.value());
     }
 
     @RequestMapping(value = "/card/{card_id}", method = RequestMethod.GET)
-    public void getCard(@PathVariable("card_id") String card_id){
+    public void getCard(HttpServletRequest request, HttpServletResponse response,
+                        @PathVariable("card_id") Integer card_id) throws Exception{
 
+        //获取当前的认证用户的用户名
+        String token = request.getHeader("Access-Token");
+        String username = tokenManager.getUsername(token);
+
+        //获取当前用户的目录
+        String path = PropertyReader.getUploadPath()+ "\\" + username;
+
+        File card = new File(path + "\\" + card_id + ".png");
+
+        //如果找不到卡片则报错
+        if(!card.exists()){
+            throw new CardNotFoundException();
+        }
+
+        //如果找到图片，则向前端返回图片
+        response.setStatus(HttpStatus.OK.value());
     }
 
-    @RequestMapping(value = "/card/{card_id}", method = RequestMethod.PUT)
-    public void putCard(@PathVariable("card_id") String card_id){
-
-    }
 }
 

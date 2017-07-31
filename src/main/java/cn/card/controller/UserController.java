@@ -97,7 +97,7 @@ public class UserController {
 		}
 
 		//为每个用户生成自己的文件夹 保存生成的名片文件
-		String userPath = upload + "/" +userCustom.getUsername();
+		String userPath = upload + "\\" +userCustom.getUsername();
 		new File(userPath).mkdir();
 
 		response.setStatus(HttpStatus.OK.value());

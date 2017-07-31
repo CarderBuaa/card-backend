@@ -17,6 +17,8 @@ import java.util.List;
  */
 public class GenerateQRcode {
 
+    public static Integer count = 1;
+
     /**
      *
      * @param userCustom 传入用户信息
@@ -44,14 +46,31 @@ public class GenerateQRcode {
        grap.setColor(Color.BLACK);
        //写入内容生成二维码图片
        String content = "BEGIN:VCARD\n" +
-               "VERSION:3.0\n" +
-               "N:"+ userCustom.getName() +"\n" +
-               "TEL:12345678912\n" +
-               "TEL;CELL:12345678912\n" +
-               "ADR;WORK:"+ userCustom.getAddress_list() + "\n" +
-               "TITLE:"+ userCustom.getOccupation() + "\n" +
-               "EMAIL;WORK:"+ userCustom.getEmail_list() + "\n" +
-               "END:VCARD";
+               "VERSION:3.0\n" ;
+
+
+       if (userCustom.getName() != null){
+           content += "N:"+ userCustom.getName() +"\n";
+       }
+       if (userCustom.getPhone() != null){
+           content += "TEL:" + userCustom.getPhone().get(0) + "\n";
+           if (userCustom.getPhone().size() != 1)
+           content += "TEL;CELL:" + userCustom.getPhone().get(1) + "\n";
+       }
+       if (userCustom.getAddress() != null && userCustom.getAddress().size() == 1){
+           content +=  "ADR:"+ userCustom.getAddress().get(0) + "\n" ;
+       }
+       if (userCustom.getOccupation() != null && userCustom.getOccupation().size() == 1){
+           content +=  "TITLE:"+ userCustom.getOccupation().get(0) + "\n" ;
+       }
+       if (userCustom.getEmail() != null && userCustom.getEmail().size() == 1){
+           content += "EMAIL;WORK:"+ userCustom.getEmail().get(0) + "\n" ;
+       }
+
+       content += "END:VCARD";
+
+       System.out.println(content);
+
        //获取内容的字节数组
        byte[] contentBytes = content.getBytes("gbk");
        //通过Qrcode获取二维数组  1 0
@@ -90,9 +109,11 @@ public class GenerateQRcode {
 
        //将用户信息打印在图片上
        //用户名字
-       g.setFont(new Font("楷体",Font.PLAIN,77));
-       g.setColor(Color.BLACK);
-       g.drawString(userCustom.getName(),10,100);
+       if(userCustom.getName() != null) {
+           g.setFont(new Font("楷体", Font.PLAIN, 77));
+           g.setColor(Color.BLACK);
+           g.drawString(userCustom.getName(), 10, 100);
+       }
 
        int height = 150;
        //用户职位
@@ -135,10 +156,11 @@ public class GenerateQRcode {
            }
        }
        //保存图片
-       String fileName1 = UUID.randomUUID()+".png";
-       File image = new File(path + fileName1);
+       String fileName1 = count + ".png";
+       File image = new File(path + "\\" +fileName1);
        try {
            ImageIO.write(background, "png", image);
+           count++;
        }catch (Exception e)
        {
            e.printStackTrace();
@@ -152,7 +174,7 @@ public class GenerateQRcode {
        userCustom.setName("sb");
        List<String> Address = new ArrayList<String>(){{add("地址1");}};
        userCustom.setAddress(Address);
-       List<String> Email = new ArrayList<String>(){{add("邮箱1");}};
+       List<String> Email = new ArrayList<String>(){{add("a502982165@qq.com");}};
        userCustom.setEmail(Email);
        List<String> Occupation = new ArrayList<String>(){{add("职位1");}};
        userCustom.setOccupation(Occupation);
@@ -164,7 +186,7 @@ public class GenerateQRcode {
        InputStream imagein = new FileInputStream("E:\\1.png");
        BufferedImage background = ImageIO.read(imagein);
 
-       GenerateQRcode.createImage(userCustom, image, background, "E:\\");
+       GenerateQRcode.createImage(userCustom, image, background, "E:");
 
    }
 

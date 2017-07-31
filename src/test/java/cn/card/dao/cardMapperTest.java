@@ -71,5 +71,33 @@ public class cardMapperTest {
 
 	}
 
+	@Test
+	public void testDelete() throws Exception{
+		CardMapper cardMapper = (CardMapper) applicationContext.getBean("cardMapper");
+
+		CardQueryVo cardQueryVo = new CardQueryVo();
+		CardCustom cardCustom = new CardCustom();
+
+		cardCustom.setId(10);
+		cardQueryVo.setCardCustom(cardCustom);
+
+		cardMapper.deleteCard(cardQueryVo);
+	}
+
+	@Test
+	public void testfindCardByID() throws Exception{
+		CardMapper cardMapper = (CardMapper) applicationContext.getBean("cardMapper");
+
+		CardQueryVo cardQueryVo = new CardQueryVo();
+		CardCustom cardCustom = new CardCustom();
+
+		cardCustom.setId(11);
+		cardQueryVo.setCardCustom(cardCustom);
+
+		CardCustom cardCustom1 = cardMapper.findCardByID(cardQueryVo);
+
+		System.out.println(cardCustom1);
+	}
+
 
 }

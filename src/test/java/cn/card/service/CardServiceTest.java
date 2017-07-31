@@ -2,8 +2,6 @@ package cn.card.service;
 
 import cn.card.domain.CardCustom;
 import cn.card.domain.CardQueryVo;
-import cn.card.domain.UserCustom;
-import cn.card.domain.UserQueryVo;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -68,6 +66,34 @@ public class CardServiceTest {
 		cardQueryVo.setCardCustom(cardCustom1);
 
 		cardService.updateCardInfo(cardQueryVo);
+	}
+
+	@Test
+	public void testDelete() throws Exception{
+		CardService cardService = (CardService) applicationContext.getBean("cardService");
+
+		CardQueryVo cardQueryVo = new CardQueryVo();
+		CardCustom cardCustom = new CardCustom();
+
+		cardCustom.setId(1);
+		cardQueryVo.setCardCustom(cardCustom);
+
+		cardService.deleteCard(cardQueryVo);
+	}
+
+	@Test
+	public void testfindCardByID() throws Exception{
+		CardService cardService = (CardService) applicationContext.getBean("cardService");
+
+		CardQueryVo cardQueryVo = new CardQueryVo();
+		CardCustom cardCustom = new CardCustom();
+
+		cardCustom.setId(11);
+		cardQueryVo.setCardCustom(cardCustom);
+
+		CardCustom cardCustom1 = cardService.findCardByID(cardQueryVo);
+
+		System.out.println(cardCustom1);
 	}
 
 

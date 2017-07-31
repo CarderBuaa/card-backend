@@ -83,6 +83,7 @@ public class CardController {
 
     }
 
+    //用于删除生成的名片
     @RequestMapping(value = "/card/{card_id}",method = RequestMethod.DELETE)
     public void deleteCard(HttpServletRequest request, HttpServletResponse response,
                            @PathVariable("card_id") Integer card_id) throws Exception{
@@ -107,6 +108,7 @@ public class CardController {
         response.setStatus(HttpStatus.OK.value());
     }
 
+    //用于获得生成的名片
     @RequestMapping(value = "/card/{card_id}", method = RequestMethod.GET)
     public void getCard(HttpServletRequest request, HttpServletResponse response,
                         @PathVariable("card_id") Integer card_id) throws Exception{
@@ -127,6 +129,14 @@ public class CardController {
 
         //如果找到图片，则向前端返回图片
         response.setStatus(HttpStatus.OK.value());
+    }
+
+    //用于修改已生成名片的数据
+    @RequestMapping(value = "/card/{card_id}", method = RequestMethod.PUT)
+    public void putCard(HttpServletRequest request, HttpServletResponse response,
+                        @PathVariable("card_id") Integer card_id) throws Exception{
+
+
     }
 
 }

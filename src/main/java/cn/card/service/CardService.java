@@ -19,4 +19,10 @@ public interface CardService {
 
     //用于寻找一个用户的所有提交记录
     List<CardCustom> findRecordList(CardQueryVo cardQueryVo);
+
+    //删除一个名片
+    void deleteCard(CardQueryVo cardQueryVo);
+
+    //通过ID查找一个名片
+    CardCustom findCardByID(CardQueryVo cardQueryVo);
 }

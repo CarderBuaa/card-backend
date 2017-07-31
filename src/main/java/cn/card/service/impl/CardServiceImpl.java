@@ -50,4 +50,20 @@ public class CardServiceImpl implements CardService{
         }
         return list;
     }
+
+    //cardQueryVo必须要设置cardCustom ID主键
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void deleteCard(CardQueryVo cardQueryVo) {
+        cardMapper.deleteCard(cardQueryVo);
+    }
+
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Override
+    public CardCustom findCardByID(CardQueryVo cardQueryVo) {
+        CardCustom cardCustom = cardMapper.findCardByID(cardQueryVo);
+        TransferCard.transferToList(cardCustom);
+        return cardCustom;
+    }
 }

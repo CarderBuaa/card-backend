@@ -25,4 +25,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT * FROM card
 		WHERE username=#{cardCustom.username}
 	</select>
+
+	<!-- 删除一个名片 -->
+	<delete id="deleteCard" parameterType="cn.card.domain.CardQueryVo">
+		DELETE FROM card
+		WHERE id = #{cardCustom.id}
+	</delete>
+
+	<!-- 通过ID查找一个名片 -->
+	<select id="findCardByID" parameterType="cn.card.domain.CardQueryVo" resultType="cn.card.domain.CardCustom">
+		SELECT *
+		FROM card
+		WHERE id = #{cardCustom.id}
+	</select>
+
 </mapper>

@@ -92,9 +92,10 @@ public class cardMapperTest {
 		CardCustom cardCustom = new CardCustom();
 
 		cardCustom.setId(11);
+		cardCustom.setUsername("a555");
 		cardQueryVo.setCardCustom(cardCustom);
 
-		CardCustom cardCustom1 = cardMapper.findCardByID(cardQueryVo);
+		CardCustom cardCustom1 = cardMapper.findCardByIDAndUsername(cardQueryVo);
 
 		System.out.println(cardCustom1);
 	}

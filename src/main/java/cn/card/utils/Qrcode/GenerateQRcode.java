@@ -1,5 +1,6 @@
 package cn.card.utils.Qrcode;
 
+import cn.card.domain.CardCustom;
 import cn.card.domain.UserCustom;
 import com.swetake.util.Qrcode;
 import org.junit.Test;
@@ -20,9 +21,9 @@ public class GenerateQRcode {
 
     /**
      *
-     * @param userCustom 传入用户信息
+     * @param cardCustom 传入用户信息
      */
-   public static BufferedImage createQrcode(UserCustom userCustom) throws IOException {
+   public static BufferedImage createQrcode(CardCustom cardCustom) throws IOException {
        //创建Qrcodede的句柄
        Qrcode qrhand = new Qrcode();
        //设置纠错级别
@@ -47,23 +48,23 @@ public class GenerateQRcode {
        String content = "BEGIN:VCARD\n" +
                "VERSION:3.0\n" ;
 
-
-       if (userCustom.getName() != null){
-           content += "N:"+ userCustom.getName() +"\n";
+        //电话能显示两个 其余全部只能显示一个
+       if (cardCustom.getName() != null){
+           content += "N:"+ cardCustom.getName() +"\n";
        }
-       if (userCustom.getPhone() != null){
-           content += "TEL:" + userCustom.getPhone().get(0) + "\n";
-           if (userCustom.getPhone().size() != 1)
-           content += "TEL;CELL:" + userCustom.getPhone().get(1) + "\n";
+       if (cardCustom.getPhone() != null){
+           content += "TEL:" + cardCustom.getPhone().get(0) + "\n";
+           if (cardCustom.getPhone().size() != 1)
+           content += "TEL;CELL:" + cardCustom.getPhone().get(1) + "\n";
        }
-       if (userCustom.getAddress() != null && userCustom.getAddress().size() == 1){
-           content +=  "ADR:"+ userCustom.getAddress().get(0) + "\n" ;
+       if (cardCustom.getAddress() != null && cardCustom.getAddress().size() == 1){
+           content +=  "ADR:"+ cardCustom.getAddress().get(0) + "\n" ;
        }
-       if (userCustom.getOccupation() != null && userCustom.getOccupation().size() == 1){
-           content +=  "TITLE:"+ userCustom.getOccupation().get(0) + "\n" ;
+       if (cardCustom.getOccupation() != null && cardCustom.getOccupation().size() == 1){
+           content +=  "TITLE:"+ cardCustom.getOccupation().get(0) + "\n" ;
        }
-       if (userCustom.getEmail() != null && userCustom.getEmail().size() == 1){
-           content += "EMAIL;WORK:"+ userCustom.getEmail().get(0) + "\n" ;
+       if (cardCustom.getEmail() != null && cardCustom.getEmail().size() == 1){
+           content += "EMAIL;WORK:"+ cardCustom.getEmail().get(0) + "\n" ;
        }
 
        content += "END:VCARD";
@@ -93,7 +94,7 @@ public class GenerateQRcode {
      * @param qrcode 存储在内存中的Qrcode
      * @param background 存储在内存中的背景图片
      */
-   public static BufferedImage createImage(UserCustom userCustom,BufferedImage qrcode, BufferedImage background){
+   public static BufferedImage createImage(CardCustom cardCustom,BufferedImage qrcode, BufferedImage background){
 
        Graphics g = background.getGraphics();
        double x = (background.getWidth()-qrcode.getWidth()-50);
@@ -107,48 +108,48 @@ public class GenerateQRcode {
 
        //将用户信息打印在图片上
        //用户名字
-       if(userCustom.getName() != null) {
+       if(cardCustom.getName() != null) {
            g.setFont(new Font("楷体", Font.PLAIN, 77));
            g.setColor(Color.BLACK);
-           g.drawString(userCustom.getName(), 10, 100);
+           g.drawString(cardCustom.getName(), 10, 100);
        }
 
        int height = 150;
        //用户职位
-       if(userCustom.getOccupation() != null) {
+       if(cardCustom.getOccupation() != null) {
            g.setFont(new Font("宋体",Font.PLAIN,30));
            g.setColor(Color.BLACK);
-           for (String Occupation : userCustom.getOccupation()) {
+           for (String Occupation : cardCustom.getOccupation()) {
                g.drawString(Occupation, 10, height);
                height += 30;
            }
        }
        //用户地址
-       if(userCustom.getAddress() != null) {
+       if(cardCustom.getAddress() != null) {
            height += 5;
            g.setFont(new Font("宋体", Font.PLAIN, 20));
            g.setColor(Color.BLACK);
-           for (String Address : userCustom.getAddress()) {
+           for (String Address : cardCustom.getAddress()) {
                g.drawString("地址:" + Address, 20, height);
                height += 20;
            }
        }
        //用户电话
-       if(userCustom.getPhone() != null) {
+       if(cardCustom.getPhone() != null) {
            height += 5;
            g.setFont(new Font("宋体", Font.PLAIN, 20));
            g.setColor(Color.BLACK);
-           for (String Phone : userCustom.getPhone()) {
+           for (String Phone : cardCustom.getPhone()) {
                g.drawString("电话:" + Phone, 20, height);
                height += 20;
            }
        }
        //用户邮箱
-       if(userCustom.getEmail() != null) {
+       if(cardCustom.getEmail() != null) {
            height += 5;
            g.setFont(new Font("宋体", Font.PLAIN, 20));
            g.setColor(Color.BLACK);
-           for (String Email : userCustom.getEmail()) {
+           for (String Email : cardCustom.getEmail()) {
                g.drawString("邮箱:" + Email, 20, height);
                height += 20;
            }
@@ -159,7 +160,7 @@ public class GenerateQRcode {
 
    @Test
    public void test() throws IOException {
-       UserCustom userCustom = new UserCustom();
+       CardCustom userCustom = new CardCustom();
 
        userCustom.setName("sb");
        List<String> Address = new ArrayList<String>(){{add("地址1");}};

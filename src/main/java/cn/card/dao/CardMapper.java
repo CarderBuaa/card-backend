@@ -24,6 +24,6 @@ public interface CardMapper {
     void deleteCard(CardQueryVo cardQueryVo);
 
     //通过ID查找一个名片
-    CardCustom findCardByID(CardQueryVo cardQueryVo);
+    CardCustom findCardByIDAndUsername(CardQueryVo cardQueryVo);
 
 }

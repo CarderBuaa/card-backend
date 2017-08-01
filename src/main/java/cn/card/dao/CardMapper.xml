@@ -32,11 +32,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		WHERE id = #{cardCustom.id}
 	</delete>
 
-	<!-- 通过ID查找一个名片 -->
-	<select id="findCardByID" parameterType="cn.card.domain.CardQueryVo" resultType="cn.card.domain.CardCustom">
+	<!-- 通过ID和username查找一个名片 -->
+	<select id="findCardByIDAndUsername" parameterType="cn.card.domain.CardQueryVo" resultType="cn.card.domain.CardCustom">
 		SELECT *
 		FROM card
-		WHERE id = #{cardCustom.id}
+		WHERE id = #{cardCustom.id} AND username = #{cardCustom.username}
 	</select>
 
 </mapper>

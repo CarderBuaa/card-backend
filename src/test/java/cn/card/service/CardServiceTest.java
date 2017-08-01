@@ -89,9 +89,10 @@ public class CardServiceTest {
 		CardCustom cardCustom = new CardCustom();
 
 		cardCustom.setId(11);
+		cardCustom.setUsername("a555");
 		cardQueryVo.setCardCustom(cardCustom);
 
-		CardCustom cardCustom1 = cardService.findCardByID(cardQueryVo);
+		CardCustom cardCustom1 = cardService.findCardByIDAndUsername(cardQueryVo);
 
 		System.out.println(cardCustom1);
 	}

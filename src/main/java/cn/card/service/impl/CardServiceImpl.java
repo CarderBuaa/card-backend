@@ -4,7 +4,6 @@ import cn.card.dao.CardMapper;
 import cn.card.domain.CardCustom;
 import cn.card.domain.CardQueryVo;
 import cn.card.service.CardService;
-import cn.card.utils.TransferData.Transfer;
 import cn.card.utils.TransferData.TransferCard;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,8 +60,8 @@ public class CardServiceImpl implements CardService{
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     @Override
-    public CardCustom findCardByID(CardQueryVo cardQueryVo) {
-        CardCustom cardCustom = cardMapper.findCardByID(cardQueryVo);
+    public CardCustom findCardByIDAndUsername(CardQueryVo cardQueryVo) {
+        CardCustom cardCustom = cardMapper.findCardByIDAndUsername(cardQueryVo);
         TransferCard.transferToList(cardCustom);
         return cardCustom;
     }

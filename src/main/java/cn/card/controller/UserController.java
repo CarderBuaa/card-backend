@@ -110,7 +110,6 @@ public class UserController {
 		UserQueryVo userQueryVo = new UserQueryVo();
 		userQueryVo.setUserCustom(userCustom);
 
-		System.out.println(userCustom);
 		//寻找用户
 		UserCustom check = userService.findUserByUserName(userQueryVo);
 		//用户不存在

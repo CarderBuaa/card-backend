@@ -1,19 +1,21 @@
 package cn.card.controller;
 
-import cn.card.domain.Card;
 import cn.card.domain.CardCustom;
 import cn.card.domain.CardQueryVo;
 import cn.card.domain.UserCustom;
+import cn.card.domain.UserQueryVo;
 import cn.card.exception.BackgroundImageNotFound;
 import cn.card.exception.CardNotFoundException;
 import cn.card.service.CardService;
-import cn.card.utils.IgnoreSecurity.IgnoreSecurity;
+import cn.card.service.UserService;
 import cn.card.utils.Qrcode.GenerateQRcode;
+import cn.card.utils.TransferData.TransferCard;
 import cn.card.utils.access_token.TokenManager;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.util.List;
 
 import cn.card.utils.propertyReader.PropertyReader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.OutputStream;
+import java.util.UUID;
 
 /**
  * Description: 控制名片行为的controller
@@ -35,8 +38,12 @@ import java.io.OutputStream;
 @Controller
 public class CardController {
 
+
+    private static String path = PropertyReader.getUploadPath();
+
     private CardService cardService;
     private TokenManager tokenManager;
+    private UserService userService;
 
     @Autowired
     public void setCardService(CardService cardService) {
@@ -48,56 +55,88 @@ public class CardController {
         this.tokenManager = tokenManager;
     }
 
-    //通过key-value的形式来绑定
-    @IgnoreSecurity
-    @RequestMapping(value = "/card",method = RequestMethod.POST)
-    public void generateCard(@RequestParam(value = "image", required = false) MultipartFile image,
-                             CardCustom cardCustom,
-                             HttpServletResponse response, HttpServletRequest request) throws Exception{
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
 
-        //如果有上传图片 则保存图片
-        if (image != null){
-//            //获取当前的认证用户的用户名
-//            String token = request.getHeader("Access-Token");
-//            String username = tokenManager.getUsername(token);
-//
-//            //获取当前用户的目录
-//            String path = PropertyReader.getUploadPath()+ "\\" + username;
-//
-//            //将上传图片流加载如内存
-//            BufferedImage background = ImageIO.read(image.getInputStream());
-//
-//            //在用户目录下生成名片c
-//            GenerateQRcode.createImage(userCustom, GenerateQRcode.createQrcode(userCustom), background);
-//
-//            response.setStatus(HttpStatus.OK.value());
-            //获取上传图片的目录
-            String upload = PropertyReader.getUploadPath();
-            System.out.println(cardCustom.getOccupation());
-
-            System.out.println(image.getOriginalFilename());
-            response.setStatus(HttpStatus.OK.value());
-        }
-        //如果上传时没有图片 则用刚刚上传的图片和现在上传的用户信息 生成名片
-        System.out.println(cardCustom.getOccupation());
+    //用于返回当前用户所有的card信息
+    @RequestMapping(value = "/getAllCard", method = RequestMethod.GET)
+    public @ResponseBody List<CardCustom> queryAllCard(HttpServletRequest request){
 
         //获取当前的认证用户的用户名
         String token = request.getHeader("Access-Token");
         String username = tokenManager.getUsername(token);
 
-        //获取当前用户的目录
-        String path = PropertyReader.getUploadPath()+ "\\" + username;
+        //设置查询条件
+        CardQueryVo cardQueryVo = new CardQueryVo();
+        CardCustom cardCustom = new CardCustom();
+        cardCustom.setUsername(username);
 
-        //将本地默认图片流加载如内存
-        BufferedImage background = ImageIO.read(new FileInputStream(PropertyReader.getUploadPath() + "\\template.png"));
+        cardQueryVo.setCardCustom(cardCustom);
 
-        //在用户目录下生成名片
-//        GenerateQRcode.createImage(userCustom, GenerateQRcode.createQrcode(userCustom), background);
+        //根据username查询当前用户所有的card信息
+        return cardService.findRecordList(cardQueryVo);
+    }
+
+    //用于返回当前用户信息 用于下拉菜单用户选择自己的信息生成key-value
+    @RequestMapping(value = "/getUserInfo", method = RequestMethod.GET)
+    public @ResponseBody UserCustom queryUser(HttpServletRequest request) throws Exception {
+
+        //获取当前的认证用户的用户名
+        String token = request.getHeader("Access-Token");
+        String username = tokenManager.getUsername(token);
+
+        //设置查找信息
+        UserQueryVo userQueryVo = new UserQueryVo();
+        UserCustom userCustom = new UserCustom();
+        userCustom.setUsername(username);
+        userQueryVo.setUserCustom(userCustom);
+
+        return userService.findUserByUserName(userQueryVo);
+    }
+
+
+    //上传图片和名片信息
+    @RequestMapping(value = "/card",method = RequestMethod.POST)
+    public void addCard(@RequestParam(value = "image", required = false) MultipartFile image,//接收前端的图片文件
+                        CardCustom cardCustom,//接收前端的信息
+                        HttpServletResponse response, HttpServletRequest request) throws Exception{
+
+        //获取当前的认证用户的用户名
+        String token = request.getHeader("Access-Token");
+        String username = tokenManager.getUsername(token);
+
+        //设置查询条件
+        CardQueryVo cardQueryVo = new CardQueryVo();
+        cardCustom.setUsername(username);
+
+        //如果有上传图片 则保存图片 并将背景图片文件名写入数据库中
+        if (image != null){
+            //保存文件扩展名
+            String ex = image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
+            //重新生成UUID文件名
+            String filename = UUID.randomUUID() + ex;
+            //保存文件到上传目录文件
+            image.transferTo(new File(path + "\\" + filename));
+            //保存文件名
+            cardCustom.setBackground(filename);
+        }
+        //如果上传时没有图片 则用默认的背景
+        else{
+            cardCustom.setBackground("template.png");
+        }
+        //将前端的信息转化
+        TransferCard.transferToString(cardCustom);
+
+        //将以上信息保存
+        cardQueryVo.setCardCustom(cardCustom);
+        //创建新的card记录
+        cardService.createRecord(cardQueryVo);
 
         response.setStatus(HttpStatus.OK.value());
 
     }
-
 
     //用于删除生成的名片
     @RequestMapping(value = "/card/{card_id}",method = RequestMethod.DELETE)
@@ -107,7 +146,6 @@ public class CardController {
         //获取当前的认证用户的用户名
         String token = request.getHeader("Access-Token");
         String username = tokenManager.getUsername(token);
-
 
         //设置查询条件
         CardQueryVo cardQueryVo = new CardQueryVo();
@@ -137,9 +175,6 @@ public class CardController {
         String token = request.getHeader("Access-Token");
         String username = tokenManager.getUsername(token);
 
-        System.out.println(card_id);
-        System.out.println(username);
-
         //设置查询条件
         CardQueryVo cardQueryVo = new CardQueryVo();
         CardCustom cardCustom = new CardCustom();
@@ -156,14 +191,17 @@ public class CardController {
         //如果找到名片信息 则生成名片 并向前端返回
 
         //从check中获取背景图片路径
-        String path = PropertyReader.getUploadPath() + "\\" + check.getBackground();
+        String backgroundPath = path + "\\" + check.getBackground();
 
         //判断背景图片是否存在
-        File back = new File(path);
+        File back = new File(backgroundPath);
         //如果背景图片不存在 则抛出异常
         if(!back.exists()){
             throw new BackgroundImageNotFound();
         }
+
+        response.setContentType("image/png");
+
         //如果找到背景图片 讲背景图片放入内存中
         BufferedImage background = ImageIO.read(new FileInputStream(back));
         //在内存中生成QRcode
@@ -178,9 +216,14 @@ public class CardController {
         //将字节制流写入response中
         OutputStream stream = response.getOutputStream();
         stream.write(result);
-        response.setContentType("image/png");
-        response.setStatus(HttpStatus.OK.value());
 
+        //释放资源
+        Qrcode.flush();
+        card.flush();
+        stream.close();
+
+
+        response.setStatus(HttpStatus.OK.value());
     }
 
     //用于修改已生成名片的数据
@@ -209,7 +252,6 @@ public class CardController {
         cardService.updateCardInfo(cardQueryVo);
 
         response.setStatus(HttpStatus.OK.value());
-
     }
 
 }

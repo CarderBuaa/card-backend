@@ -8,8 +8,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<!-- 用于上传文件时向card表里插入数据 -->
 	<insert id="createRecord" parameterType="cn.card.domain.CardQueryVo">
-		INSERT INTO card(username, background)
-		VALUES (#{cardCustom.username}, #{cardCustom.background})
+		INSERT INTO card(username, background, name, occupation_list, email_list, phone_list, address_list)
+		VALUES (#{cardCustom.username}, #{cardCustom.background},
+				#{cardCustom.name}, #{cardCustom.occupation_list},
+				#{cardCustom.email_list}, #{cardCustom.phone_list},
+				#{cardCustom.address_list})
 	</insert>
 
 	<!-- 用于在用户信息上传后向card表里更新数据 -->

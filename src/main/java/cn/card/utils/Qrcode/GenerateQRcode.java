@@ -174,7 +174,7 @@ public class GenerateQRcode {
 
        BufferedImage image = GenerateQRcode.createQrcode(userCustom);
 
-       InputStream imagein = new FileInputStream("E:\\1.png");
+       InputStream imagein = new FileInputStream("E:\\uploads\\2af7d3f3-7c4c-43b3-9647-240f531dd9fb.JPG");
        BufferedImage background = ImageIO.read(imagein);
 
        BufferedImage result = GenerateQRcode.createImage(userCustom, image, background);

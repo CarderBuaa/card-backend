@@ -21,7 +21,7 @@ public class SecurityAspect {
 
     private TokenManager tokenManager;
 
-    private static String tokenName = "Access-Token";
+    private static final String tokenName = "Access-Token";
 
     public void setTokenManager(TokenManager tokenManager) {
 

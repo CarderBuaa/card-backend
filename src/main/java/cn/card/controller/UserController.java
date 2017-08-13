@@ -16,11 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import cn.card.domain.UserCustom;
 import cn.card.domain.UserQueryVo;
@@ -37,6 +33,8 @@ import java.util.List;
  * @author z
  * @date 2017年7月26日
  */
+//添加跨域请求支持
+@CrossOrigin
 @Controller
 public class UserController {
 
@@ -58,7 +56,7 @@ public class UserController {
 	//注册方法不需要检查token
 	@IgnoreSecurity
 	@RequestMapping(value="/user",method=RequestMethod.POST)
-	public void createUserController(@Validated @RequestBody UserCustom userCustom, BindingResult result,
+	public void createUserController(@Validated UserCustom userCustom, BindingResult result,
 									 HttpServletResponse response) throws Exception{
 
 		//没想到好的写法 囧
@@ -146,7 +144,7 @@ public class UserController {
 	//登录方法不用检查Token
 	@IgnoreSecurity
 	@RequestMapping(value="/user/accesstoken",method=RequestMethod.POST)
-	public void getAccessToken(@Validated @RequestBody UserCustom userCustom, BindingResult result,
+	public void getAccessToken(@Validated UserCustom userCustom, BindingResult result,
 							   HttpServletResponse response) throws Exception {
 
 		//验证没想到好的写法 囧

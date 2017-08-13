@@ -35,6 +35,8 @@ import java.util.UUID;
  * Description: 控制名片行为的controller
  * Created by z on 2017/7/27.
  */
+//添加跨域请求支持
+@CrossOrigin
 @Controller
 public class CardController {
 
@@ -61,7 +63,7 @@ public class CardController {
     }
 
     //用于返回当前用户所有的card信息
-    @RequestMapping(value = "/getAllCard", method = RequestMethod.GET)
+    @RequestMapping(value = "/card/getAllCard", method = RequestMethod.GET)
     public @ResponseBody List<CardCustom> queryAllCard(HttpServletRequest request){
 
         //获取当前的认证用户的用户名
@@ -80,7 +82,7 @@ public class CardController {
     }
 
     //用于返回当前用户信息 用于下拉菜单用户选择自己的信息生成key-value
-    @RequestMapping(value = "/getUserInfo", method = RequestMethod.GET)
+    @RequestMapping(value = "/card/getUserInfo", method = RequestMethod.GET)
     public @ResponseBody UserCustom queryUser(HttpServletRequest request) throws Exception {
 
         //获取当前的认证用户的用户名
@@ -100,7 +102,7 @@ public class CardController {
     //上传图片和名片信息
     @RequestMapping(value = "/card",method = RequestMethod.POST)
     public void addCard(@RequestParam(value = "image", required = false) MultipartFile image,//接收前端的图片文件
-                        CardCustom cardCustom,//接收前端的信息
+                        CardCustom cardCustom,//接收前端的名片信息
                         HttpServletResponse response, HttpServletRequest request) throws Exception{
 
         //获取当前的认证用户的用户名
@@ -135,7 +137,6 @@ public class CardController {
         cardService.createRecord(cardQueryVo);
 
         response.setStatus(HttpStatus.OK.value());
-
     }
 
     //用于删除生成的名片

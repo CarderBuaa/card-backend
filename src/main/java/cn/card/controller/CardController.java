@@ -63,7 +63,7 @@ public class CardController {
     }
 
     //用于返回当前用户所有的card信息
-    @RequestMapping(value = "/card/getAllCard", method = RequestMethod.GET)
+    @RequestMapping(value = "/card/allCard", method = RequestMethod.GET)
     public @ResponseBody List<CardCustom> queryAllCard(HttpServletRequest request){
 
         //获取当前的认证用户的用户名
@@ -82,7 +82,7 @@ public class CardController {
     }
 
     //用于返回当前用户信息 用于下拉菜单用户选择自己的信息生成key-value
-    @RequestMapping(value = "/card/getUserInfo", method = RequestMethod.GET)
+    @RequestMapping(value = "/card/userInfo", method = RequestMethod.GET)
     public @ResponseBody UserCustom queryUser(HttpServletRequest request) throws Exception {
 
         //获取当前的认证用户的用户名

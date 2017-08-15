@@ -48,17 +48,15 @@ public class GenerateQRcode {
        String content = "BEGIN:VCARD\n" +
                "VERSION:3.0\n" ;
 
-        //电话能显示两个 其余全部只能显示一个
+        //全部只能显示一个
        if (cardCustom.getName() != null){
            content += "N:"+ cardCustom.getName() +"\n";
        }
-       if (cardCustom.getPhone() != null){
+       if (cardCustom.getPhone() != null && cardCustom.getPhone().size() == 1){
            content += "TEL:" + cardCustom.getPhone().get(0) + "\n";
-           if (cardCustom.getPhone().size() != 1)
-           content += "TEL;CELL:" + cardCustom.getPhone().get(1) + "\n";
        }
        if (cardCustom.getAddress() != null && cardCustom.getAddress().size() == 1){
-           content +=  "ADR:"+ cardCustom.getAddress().get(0) + "\n" ;
+           content +=  "ADR;WORK:"+ cardCustom.getAddress().get(0) + "\n" ;
        }
        if (cardCustom.getOccupation() != null && cardCustom.getOccupation().size() == 1){
            content +=  "TITLE:"+ cardCustom.getOccupation().get(0) + "\n" ;
@@ -66,10 +64,7 @@ public class GenerateQRcode {
        if (cardCustom.getEmail() != null && cardCustom.getEmail().size() == 1){
            content += "EMAIL;WORK:"+ cardCustom.getEmail().get(0) + "\n" ;
        }
-
        content += "END:VCARD";
-
-       System.out.println(content);
 
        //获取内容的字节数组
        byte[] contentBytes = content.getBytes("gbk");
@@ -94,7 +89,7 @@ public class GenerateQRcode {
      * @param qrcode 存储在内存中的Qrcode
      * @param background 存储在内存中的背景图片
      */
-   public static BufferedImage createImage(CardCustom cardCustom,BufferedImage qrcode, BufferedImage background){
+   public static BufferedImage createImage(CardCustom cardCustom, BufferedImage qrcode, BufferedImage background){
 
        Graphics g = background.getGraphics();
        double x = (background.getWidth()-qrcode.getWidth()-50);
@@ -174,7 +169,7 @@ public class GenerateQRcode {
 
        BufferedImage image = GenerateQRcode.createQrcode(userCustom);
 
-       InputStream imagein = new FileInputStream("E:\\uploads\\2af7d3f3-7c4c-43b3-9647-240f531dd9fb.JPG");
+       InputStream imagein = new FileInputStream("E:\\uploads\\template.png");
        BufferedImage background = ImageIO.read(imagein);
 
        BufferedImage result = GenerateQRcode.createImage(userCustom, image, background);

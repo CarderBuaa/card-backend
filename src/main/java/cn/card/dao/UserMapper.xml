@@ -33,11 +33,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<!-- 更新用户 -->
 	<update id="updateUserInfo" parameterType="cn.card.domain.UserQueryVo">
-		UPDATE user SET name=#{userCustom.name}, occupation_list=#{userCustom.occupation_list},
-						email_list=#{userCustom.email_list}, phone_list=#{userCustom.phone_list},
-						address_list=#{userCustom.address_list}
+		UPDATE user
+		<set>
+			<if test="userCustom.name!=null">
+				name=#{userCustom.name},
+			</if>
+			<if test="userCustom.occupation_list!=null">
+				occupation_list=#{userCustom.occupation_list},
+			</if>
+			<if test="userCustom.email_list!=null">
+				email_list=#{userCustom.email_list},
+			</if>
+			<if test="userCustom.phone_list!=null">
+				phone_list=#{userCustom.phone_list},
+			</if>
+			<if test="userCustom.address_list!=null">
+				address_list=#{userCustom.address_list}
+			</if>
+		</set>
 		<where>
-			<include refid="query_where_username"></include>
+			<include refid="query_where_username"/>
 		</where>
 	</update>
 </mapper>

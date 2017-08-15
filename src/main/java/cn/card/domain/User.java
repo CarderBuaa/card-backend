@@ -1,6 +1,7 @@
 package cn.card.domain;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * 
@@ -47,8 +48,8 @@ public class User {
 	public String getEmail_list() {
 		return email_list;
 	}
-	public void setEmail_list(String emai_list) {
-		this.email_list = emai_list;
+	public void setEmail_list(String email_list) {
+		this.email_list = email_list;
 	}
 	public String getPhone_list() {
 		return phone_list;

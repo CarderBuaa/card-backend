@@ -1,10 +1,9 @@
 package cn.card.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import cn.card.exception.PawordWrongException;
-import cn.card.exception.UserNameisNull;
-import cn.card.exception.UserNotFoundException;
+import cn.card.exception.*;
 import cn.card.utils.GenerateMD5.MD5;
 import cn.card.utils.IgnoreSecurity.IgnoreSecurity;
 import cn.card.utils.access_token.TokenManager;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import cn.card.domain.UserCustom;
 import cn.card.domain.UserQueryVo;
-import cn.card.exception.UserExistException;
 import cn.card.service.UserService;
 
 import java.io.File;
@@ -66,6 +64,10 @@ public class UserController {
 				throw new UserNameisNull(error.getDefaultMessage());
 			}
 		}
+		//以后可以使用hibernate validation来进行验证
+		if(userCustom.getUsername().getBytes().length > 30 || userCustom.getUsername().getBytes().length == 0){
+			throw new IllegalUsernameException();
+		}
 
 		//新建查询对象
 		UserQueryVo userQueryVo = new UserQueryVo();
@@ -97,11 +99,21 @@ public class UserController {
 	}
 
 	@RequestMapping(value="/user/{username}",method= RequestMethod.PUT)
-	public void editUserController(@PathVariable("username") String username, @RequestBody UserCustom userCustom,
-				HttpServletResponse response) throws Exception {
-
+	public void editUserController(@PathVariable("username") String username,
+								   @RequestBody UserCustom userCustom,
+								   HttpServletRequest request,
+								   HttpServletResponse response) throws Exception {
 		//对中文路径编码问题的处理
 		username = new String(username.getBytes("ISO-8859-1"), "utf8");
+
+		//获取token的username
+		String token = request.getHeader("Access-Token");
+		String username_token = tokenManager.getUsername(token);
+
+		//判断与当前请求username是否相同
+		if(!username_token.equals(username)){
+			throw new TokenException();
+		}
 
 		//新建查询对象
 		userCustom.setUsername(username);
@@ -114,17 +126,29 @@ public class UserController {
 		if (check == null) {
 			throw new UserNotFoundException();
 		}
-		//更新用户信息
-		userService.updateUserInfo(userQueryVo);
+		//更新用户信息并且存在需要更改信息才更改
+		if(userCustom.getEmail() != null || userCustom.getAddress() != null || userCustom.getOccupation() != null
+				|| userCustom.getPhone() != null || userCustom.getName() != null)
+			userService.updateUserInfo(userQueryVo);
+
 		response.setStatus(HttpStatus.OK.value());
 	}
 
 	@RequestMapping(value="/user/{username}",method = RequestMethod.GET)
-	public @ResponseBody UserCustom getUserController(@PathVariable("username") String username) throws Exception {
+	public @ResponseBody UserCustom getUserController(@PathVariable("username") String username,
+													  HttpServletRequest request) throws Exception {
 
 		//对中文路径编码问题的处理
 		username = new String(username.getBytes("ISO-8859-1"), "utf8");
 
+		//获取token的username
+		String token = request.getHeader("Access-Token");
+		String username_token = tokenManager.getUsername(token);
+
+		//判断与当前请求username是否相同
+		if(!username_token.equals(username)){
+			throw new TokenException();
+		}
 
 		//新建查询对象
 		UserCustom userCustom = new UserCustom();

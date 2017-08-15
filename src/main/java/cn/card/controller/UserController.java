@@ -3,7 +3,9 @@ package cn.card.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cn.card.domain.*;
 import cn.card.exception.*;
+import cn.card.service.CardService;
 import cn.card.utils.GenerateMD5.MD5;
 import cn.card.utils.IgnoreSecurity.IgnoreSecurity;
 import cn.card.utils.access_token.TokenManager;
@@ -17,8 +19,6 @@ import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import cn.card.domain.UserCustom;
-import cn.card.domain.UserQueryVo;
 import cn.card.service.UserService;
 
 import java.io.File;
@@ -39,6 +39,7 @@ public class UserController {
 
 	private UserService userService;
 	private TokenManager tokenManager;
+	private CardService cardService;
 
 	@Autowired
 	public void setUserService(UserService userService) {
@@ -50,6 +51,10 @@ public class UserController {
 		this.tokenManager = tokenManager;
 	}
 
+	@Autowired
+	public void setCardService(CardService cardService) {
+		this.cardService = cardService;
+	}
 
 	//注册方法不需要检查token
 	@IgnoreSecurity
@@ -162,6 +167,20 @@ public class UserController {
 		if (check == null) {
 			throw new UserNotFoundException();
 		}
+
+		//设置查询条件
+		CardQueryVo cardQueryVo = new CardQueryVo();
+		CardCustom cardCustom = new CardCustom();
+		cardCustom.setUsername(username);
+
+		cardQueryVo.setCardCustom(cardCustom);
+
+		//根据username查询当前用户所有的card信息
+		List<CardCustom> cardCustomList =  cardService.findRecordList(cardQueryVo);
+
+		//设置返回信息
+		check.setCards(cardCustomList);
+
 		return check;
 	}
 

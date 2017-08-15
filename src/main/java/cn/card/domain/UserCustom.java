@@ -15,6 +15,7 @@ public class UserCustom extends User{
 	List<String> address;
 	List<String> email;
 	List<String> phone;
+	List<CardCustom> cards;
 	
 	public List<String> getOccupation() {
 		return occupation;
@@ -40,7 +41,15 @@ public class UserCustom extends User{
 	public void setPhone(List<String> phone) {
 		this.phone = phone;
 	}
-	
+
+	public List<CardCustom> getCards() {
+		return cards;
+	}
+
+	public void setCards(List<CardCustom> cards) {
+		this.cards = cards;
+	}
+
 	@Override
 	public String toString() {
 		return super.toString() + "UserCustom [occupation=" + occupation + ", address=" + address + ", emai=" + email + ", phone=" + phone

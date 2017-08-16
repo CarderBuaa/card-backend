@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.List;
@@ -134,7 +135,7 @@ public class GenerateQRcode {
            height += 5;
            g.setFont(new Font("宋体", Font.PLAIN, 20));
            g.setColor(Color.BLACK);
-           for (String Phone : cardCustom.getPhone()) {
+           for (BigInteger Phone : cardCustom.getPhone()) {
                g.drawString("电话:" + Phone, 20, height);
                height += 20;
            }
@@ -164,7 +165,7 @@ public class GenerateQRcode {
        userCustom.setEmail(Email);
        List<String> Occupation = new ArrayList<String>(){{add("职位1");}};
        userCustom.setOccupation(Occupation);
-       List<String> phone = new ArrayList<String>(){{add("1232321312312");}};
+       List<BigInteger> phone = new ArrayList<BigInteger>(){{add(new BigInteger("312312312"));}};
        userCustom.setPhone(phone);
 
        BufferedImage image = GenerateQRcode.createQrcode(userCustom);

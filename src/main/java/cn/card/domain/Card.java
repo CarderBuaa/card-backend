@@ -7,7 +7,7 @@ package cn.card.domain;
 public class Card {
 
     //主键自增ID
-    private int id;
+    private Integer id;
     //外键于user表的username
     private String username;
     //用于存储背景图片的文件名

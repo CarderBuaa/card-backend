@@ -1,5 +1,6 @@
 package cn.card.utils;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,18 +13,18 @@ public class TransferTest {
 
 
 	@Test
-	public void testTransferToList() {
+	public void testTransferToList() throws Exception{
 		UserCustom userCustom = new UserCustom();
 		userCustom.setAddress_list("一个地址;两个地址;三个地址;");
 		userCustom.setEmail_list("一个邮箱;两个邮箱;三个邮箱;");
 		userCustom.setOccupation_list("一个职位;两个职位;三个职位;");
-		userCustom.setPhone_list("一个电话;两个电话;三个电话;");
+		userCustom.setPhone_list("321321;3213;321312;");
 		Transfer.transferToList(userCustom);
 		System.out.println(userCustom);
 	}
 	
 	@Test
-	public void testTransferToString() {
+	public void testTransferToString() throws Exception{
 		UserCustom userCustom = new UserCustom();
 		
 		List<String> address = new ArrayList<String>();
@@ -36,9 +37,10 @@ public class TransferTest {
 		email.add("邮箱2");
 		userCustom.setEmail(email);
 		
-		List<String> phone = new ArrayList<String>();
-		phone.add("电话1");
-		phone.add("电话2");
+		List<BigInteger> phone = new ArrayList<BigInteger>();
+		phone.add(new BigInteger("1323"));
+		phone.add(new BigInteger("1321"));
+		phone.add(new BigInteger("321"));
 		userCustom.setPhone(phone);
 		
 		List<String> occupation = new ArrayList<String>();

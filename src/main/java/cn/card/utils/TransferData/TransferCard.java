@@ -2,7 +2,9 @@ package cn.card.utils.TransferData;
 
 import cn.card.domain.CardCustom;
 import cn.card.domain.UserCustom;
+import cn.card.exception.PhoneException;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,7 +21,7 @@ public class TransferCard {
 	 * Description:用于将从database里面取出的String转换成List
 	 * @param cardCustom
 	 */
-	public static void transferToList(CardCustom cardCustom) {
+	public static void transferToList(CardCustom cardCustom) throws Exception{
 
 		if(cardCustom != null) {
 			//地址转化
@@ -43,7 +45,12 @@ public class TransferCard {
 				String[] phone = cardCustom.getPhone_list().split(";");
 				List<String> phonelList = new ArrayList<String>();
 				Collections.addAll(phonelList, phone);
-				cardCustom.setPhone(phonelList);
+				List<BigInteger> phone_integer = new ArrayList<BigInteger>();
+				for(String phone_str: phonelList){
+					BigInteger temp = new BigInteger(phone_str);
+					phone_integer.add(temp);
+				}
+				cardCustom.setPhone(phone_integer);
 			}
 
 			//职位转化
@@ -61,7 +68,7 @@ public class TransferCard {
 	 * Description:用于将前端获取的List数据转换成String数据
 	 * @param cardCustom
 	 */
-	public static void transferToString(CardCustom cardCustom) {
+	public static void transferToString(CardCustom cardCustom) throws Exception{
 
 		if (cardCustom != null) {
 			//地址变化
@@ -89,7 +96,16 @@ public class TransferCard {
 			//电话转化
 			if (cardCustom.getPhone() != null) {
 				StringBuilder sb11 = new StringBuilder();
-				for (String s : cardCustom.getPhone()) {
+				List<BigInteger> phone_integer = cardCustom.getPhone();
+				List<String> phone_str = new ArrayList<String>();
+				for(BigInteger phone_int: phone_integer){
+					String temp = phone_int.toString();
+					if(temp.length() > 11){
+						throw new PhoneException();
+					}
+					phone_str.add(temp);
+				}
+				for (String s : phone_str) {
 					if (s != null && !"".equals(s)) {
 						sb11.append(s).append(";");
 					}

@@ -1,5 +1,6 @@
 package cn.card.domain;
 
+import java.math.BigInteger;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ public class CardCustom extends Card{
 	List<String> occupation;
 	List<String> address;
 	List<String> email;
-	List<String> phone;
+	List<BigInteger> phone;
 	
 	public List<String> getOccupation() {
 		return occupation;
@@ -34,15 +35,18 @@ public class CardCustom extends Card{
 	public void setEmail(List<String> emai) {
 		this.email = emai;
 	}
-	public List<String> getPhone() {
+
+	public List<BigInteger> getPhone() {
 		return phone;
 	}
-	public void setPhone(List<String> phone) {
+
+	public void setPhone(List<BigInteger> phone) {
 		this.phone = phone;
 	}
 
 	@Override
 	public String toString() {
+
 		return super.toString() + "CardCustom{" +
 				"occupation=" + occupation +
 				", address=" + address +

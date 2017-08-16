@@ -168,6 +168,8 @@ public class UserController {
 			throw new UserNotFoundException();
 		}
 
+		System.out.println(check + "\n");
+
 		//设置查询条件
 		CardQueryVo cardQueryVo = new CardQueryVo();
 		CardCustom cardCustom = new CardCustom();
@@ -180,6 +182,8 @@ public class UserController {
 
 		//设置返回信息
 		check.setCards(cardCustomList);
+
+		System.out.println(check);
 
 		return check;
 	}

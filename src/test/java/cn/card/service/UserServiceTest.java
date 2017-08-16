@@ -10,6 +10,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import cn.card.domain.UserCustom;
 import cn.card.domain.UserQueryVo;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserServiceTest {
 
 	private ApplicationContext applicationContext;
@@ -27,7 +31,7 @@ public class UserServiceTest {
 		UserQueryVo userQueryVo = new UserQueryVo();
 		
 		userQueryVo.setUserCustom(new UserCustom());
-		userQueryVo.getUserCustom().setUsername("a5");
+		userQueryVo.getUserCustom().setUsername("a502982165");
 		try {
 			UserCustom userCustom = userService.findUserByUserName(userQueryVo);
 			System.out.println(userCustom);
@@ -59,9 +63,11 @@ public class UserServiceTest {
 		UserQueryVo userQueryVo = new UserQueryVo();
 		UserCustom userCustom = new UserCustom();
 
-		userCustom.setUsername("a55555");
-		userCustom.setPassword("aa5665");
-		userCustom.setAddress_list("年轻就是好呀");
+		userCustom.setUsername("sb");
+		List<BigInteger> phone = new ArrayList<BigInteger>();
+		phone.add(new BigInteger("123123"));
+		phone.add(new BigInteger("312312"));
+		userCustom.setPhone(phone);
 
 		userQueryVo.setUserCustom(userCustom);
 		

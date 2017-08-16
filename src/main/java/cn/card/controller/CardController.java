@@ -102,12 +102,12 @@ public class CardController {
             //重新生成UUID文件名
             String filename = UUID.randomUUID() + ex;
             //保存文件到上传目录文件
-            image.transferTo(new File(path + "\\" + filename));
+            image.transferTo(new File(path + "/" + filename));
             //保存文件名
             cardCustom.setBackground(filename);
         }
         //如果上传时没有图片 则用默认的背景
-        else{
+        else {
             cardCustom.setBackground("template.png");
         }
         //将前端的信息转化
@@ -115,8 +115,12 @@ public class CardController {
 
         //将以上信息保存
         cardQueryVo.setCardCustom(cardCustom);
+
         //创建新的card记录
         cardService.createRecord(cardQueryVo);
+
+        //再将card内的其他信息保存到数据库中
+        cardService.updateCardInfo(cardQueryVo);
 
         response.setStatus(HttpStatus.OK.value());
     }
@@ -174,7 +178,7 @@ public class CardController {
         //如果找到名片信息 则生成名片 并向前端返回
 
         //从check中获取背景图片路径
-        String backgroundPath = path + "\\" + check.getBackground();
+        String backgroundPath = path + "/" + check.getBackground();
 
         //判断背景图片是否存在
         File back = new File(backgroundPath);
@@ -231,8 +235,10 @@ public class CardController {
         if(check == null){
             throw new CardNotFoundException();
         }
-        //如果找到名片信息 则将前端返回的名片信息写进cardCustom中
-        cardService.updateCardInfo(cardQueryVo);
+        //更新名片信息并且存在需要更改信息才更改
+        if(cardCustom.getEmail() != null || cardCustom.getAddress() != null || cardCustom.getOccupation() != null
+                || cardCustom.getPhone() != null || cardCustom.getName() != null)
+            cardService.updateCardInfo(cardQueryVo);
 
         response.setStatus(HttpStatus.OK.value());
     }

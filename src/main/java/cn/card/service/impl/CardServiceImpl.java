@@ -28,21 +28,20 @@ public class CardServiceImpl implements CardService{
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public void createRecord(CardQueryVo cardQueryVo) {
-        TransferCard.transferToString(cardQueryVo.getCardCustom());
+    public void createRecord(CardQueryVo cardQueryVo) throws Exception{
         cardMapper.createRecord(cardQueryVo);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public void updateCardInfo(CardQueryVo cardQueryVo) {
+    public void updateCardInfo(CardQueryVo cardQueryVo) throws Exception{
         TransferCard.transferToString(cardQueryVo.getCardCustom());
         cardMapper.updateCardInfo(cardQueryVo);
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     @Override
-    public List<CardCustom> findRecordList(CardQueryVo cardQueryVo) {
+    public List<CardCustom> findRecordList(CardQueryVo cardQueryVo) throws Exception{
         List<CardCustom> list = cardMapper.findRecordList(cardQueryVo);
         for (CardCustom cardCustom : list){
             TransferCard.transferToList(cardCustom);
@@ -53,14 +52,14 @@ public class CardServiceImpl implements CardService{
     //cardQueryVo必须要设置cardCustom ID主键
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public void deleteCard(CardQueryVo cardQueryVo) {
+    public void deleteCard(CardQueryVo cardQueryVo) throws Exception{
         cardMapper.deleteCard(cardQueryVo);
     }
 
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     @Override
-    public CardCustom findCardByIDAndUsername(CardQueryVo cardQueryVo) {
+    public CardCustom findCardByIDAndUsername(CardQueryVo cardQueryVo) throws Exception{
         CardCustom cardCustom = cardMapper.findCardByIDAndUsername(cardQueryVo);
         TransferCard.transferToList(cardCustom);
         return cardCustom;

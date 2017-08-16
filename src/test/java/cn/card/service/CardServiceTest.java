@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CardServiceTest {
@@ -47,6 +48,12 @@ public class CardServiceTest {
 		cardQueryVo.setCardCustom(cardCustom);
 
 		cardService.createRecord(cardQueryVo);
+
+		List<String> address = new ArrayList<>();
+		address.add("地址咦");
+		cardCustom.setAddress(address);
+
+		cardService.updateCardInfo(cardQueryVo);
 	}
 
 	@Test

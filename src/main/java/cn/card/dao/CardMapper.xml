@@ -6,20 +6,35 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <!-- mapper.java接口地址 -->
 <mapper namespace="cn.card.dao.CardMapper">
 
-	<!-- 用于上传文件时向card表里插入数据 -->
+	<!-- 用于上传文件时向card表里插入数据 先创建一个记录再去更新其信息-->
 	<insert id="createRecord" parameterType="cn.card.domain.CardQueryVo">
-		INSERT INTO card(username, background, name, occupation_list, email_list, phone_list, address_list)
-		VALUES (#{cardCustom.username}, #{cardCustom.background},
-				#{cardCustom.name}, #{cardCustom.occupation_list},
-				#{cardCustom.email_list}, #{cardCustom.phone_list},
-				#{cardCustom.address_list})
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="cardCustom.id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO card(username, background)
+		VALUES (#{cardCustom.username}, #{cardCustom.background})
 	</insert>
 
 	<!-- 用于在用户信息上传后向card表里更新数据 -->
 	<update id="updateCardInfo" parameterType="cn.card.domain.CardQueryVo">
-		UPDATE card SET name=#{cardCustom.name}, occupation_list=#{cardCustom.occupation_list},
-						email_list=#{cardCustom.email_list}, phone_list=#{cardCustom.phone_list},
-						address_list=#{cardCustom.address_list}
+		UPDATE card
+		<set>
+			<if test="cardCustom.name != null and cardCustom.name != ''">
+				name=#{cardCustom.name},
+			</if>
+			<if test="cardCustom.occupation_list !=null and cardCustom.occupation_list != ''">
+				occupation_list=#{cardCustom.occupation_list},
+			</if>
+			<if test="cardCustom.email_list != null and cardCustom.email_list != ''">
+				email_list=#{cardCustom.email_list},
+			</if>
+			<if test="cardCustom.phone_list != null and cardCustom.phone_list != ''">
+				phone_list=#{cardCustom.phone_list},
+			</if>
+			<if test="cardCustom.address_list != null and cardCustom.address_list != ''">
+				address_list=#{cardCustom.address_list}
+			</if>
+		</set>
 		WHERE id=#{cardCustom.id};
 	</update>
 

@@ -32,7 +32,7 @@ public class cardMapperTest {
 
 		List<CardCustom> list = cardMapper.findRecordList(cardQueryVo);
 
-		System.out.println(list.get(list.size()-1));
+		System.out.println(list);
 	}
 
 	@Test
@@ -48,6 +48,8 @@ public class cardMapperTest {
 		cardQueryVo.setCardCustom(cardCustom);
 
 		cardMapper.createRecord(cardQueryVo);
+
+		System.out.println(cardQueryVo.getCardCustom().getId());
 
 	}
 

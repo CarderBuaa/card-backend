@@ -57,8 +57,8 @@ public class UserMapperTest {
 		UserCustom userCustom = new UserCustom();
 
 		userCustom.setUsername("a555");
-//		userCustom.setAddress_list("hhhhhhh;1111");
-//		userCustom.setEmail_list("321321321321321");
+		userCustom.setAddress_list("hhhhhhh;1111");
+		userCustom.setEmail_list("321321321321321");
 		userQueryVo.setUserCustom(userCustom);
 
 		userMapper.updateUserInfo(userQueryVo);

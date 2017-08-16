@@ -8,6 +8,7 @@ import cn.card.exception.BackgroundImageNotFound;
 import cn.card.exception.CardNotFoundException;
 import cn.card.service.CardService;
 import cn.card.service.UserService;
+import cn.card.utils.IgnoreSecurity.IgnoreSecurity;
 import cn.card.utils.Qrcode.GenerateQRcode;
 import cn.card.utils.TransferData.TransferCard;
 import cn.card.utils.access_token.TokenManager;
@@ -87,6 +88,7 @@ public class CardController {
                         CardCustom cardCustom,//接收前端的名片信息
                         HttpServletResponse response, HttpServletRequest request) throws Exception{
 
+        System.out.println(cardCustom);
         //获取当前的认证用户的用户名
         String token = request.getHeader("Access-Token");
         String username = tokenManager.getUsername(token);
@@ -116,11 +118,18 @@ public class CardController {
         //将以上信息保存
         cardQueryVo.setCardCustom(cardCustom);
 
-        //创建新的card记录
-        cardService.createRecord(cardQueryVo);
+        //创建卡片信息并且存在需要信息才创建
+        if((cardCustom.getEmail() != null && !cardCustom.getEmail().isEmpty()) ||
+                (cardCustom.getAddress() != null && !cardCustom.getAddress().isEmpty()) ||
+                (cardCustom.getOccupation() != null && !cardCustom.getOccupation().isEmpty()) ||
+                (cardCustom.getPhone() != null && !cardCustom.getPhone().isEmpty()) ||
+                (cardCustom.getName() != null && !cardCustom.getName().equals(""))){
+            //创建新的card记录
+            cardService.createRecord(cardQueryVo);
 
-        //再将card内的其他信息保存到数据库中
-        cardService.updateCardInfo(cardQueryVo);
+            //再将card内的其他信息保存到数据库中
+            cardService.updateCardInfo(cardQueryVo);
+        }
 
         response.setStatus(HttpStatus.OK.value());
     }
@@ -155,12 +164,12 @@ public class CardController {
     }
 
     //用于获得生成的名片
+    @IgnoreSecurity
     @RequestMapping(value = "/card/{card_id}", method = RequestMethod.GET)
-    public void getCard(HttpServletRequest request, HttpServletResponse response,
-                        @PathVariable("card_id") Integer card_id) throws Exception{
-        //获取当前的认证用户的用户名
-        String token = request.getHeader("Access-Token");
-        String username = tokenManager.getUsername(token);
+    public void getCard(HttpServletResponse response,
+                        @PathVariable("card_id") Integer card_id,
+                        @RequestParam("username") String username
+                        ) throws Exception{
 
         //设置查询条件
         CardQueryVo cardQueryVo = new CardQueryVo();
@@ -236,9 +245,13 @@ public class CardController {
             throw new CardNotFoundException();
         }
         //更新名片信息并且存在需要更改信息才更改
-        if(cardCustom.getEmail() != null || cardCustom.getAddress() != null || cardCustom.getOccupation() != null
-                || cardCustom.getPhone() != null || cardCustom.getName() != null)
+        if((cardCustom.getEmail() != null && !cardCustom.getEmail().isEmpty()) ||
+                (cardCustom.getAddress() != null && !cardCustom.getAddress().isEmpty()) ||
+                (cardCustom.getOccupation() != null && !cardCustom.getOccupation().isEmpty()) ||
+                (cardCustom.getPhone() != null && !cardCustom.getPhone().isEmpty()) ||
+                (cardCustom.getName() != null && !cardCustom.getName().equals(""))) {
             cardService.updateCardInfo(cardQueryVo);
+        }
 
         response.setStatus(HttpStatus.OK.value());
     }

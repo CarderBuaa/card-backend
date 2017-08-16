@@ -19,6 +19,8 @@ import java.util.List;
  */
 public class GenerateQRcode {
 
+    private final static int width_static = 800;
+    private final static int height_static = 483;
 
     /**
      *
@@ -68,7 +70,7 @@ public class GenerateQRcode {
        content += "END:VCARD";
 
        //获取内容的字节数组
-       byte[] contentBytes = content.getBytes("gbk");
+       byte[] contentBytes = content.getBytes("utf-8");
        //通过Qrcode获取二维数组  1 0
        boolean[][] codeOut = qrhand.calQrcode(contentBytes);
        //遍历二维数组，获取值，生成二维码
@@ -92,7 +94,20 @@ public class GenerateQRcode {
      */
    public static BufferedImage createImage(CardCustom cardCustom, BufferedImage qrcode, BufferedImage background){
 
-       Graphics g = background.getGraphics();
+       Integer height_origin = background.getHeight();
+       Integer width_origin = background.getWidth();
+       //将图片等比例放大
+       if(height_origin < height_static || width_origin < width_static){
+            //比较两个的放大倍数
+           double height_compare = height_origin/height_static;
+           double width_compare = width_origin/width_static;
+           double result = height_compare > width_compare ? height_compare : width_compare;
+           background = zoomInImage(background, (int)(width_origin * result), (int)(height_origin * result));
+       }
+       //将图片裁剪
+       background = crop(background,0, 0, width_static, height_static);
+
+       Graphics2D g = background.createGraphics();
        double x = (background.getWidth()-qrcode.getWidth()-50);
        double y = (background.getHeight()/2-qrcode.getHeight()/2);
 
@@ -102,56 +117,102 @@ public class GenerateQRcode {
                qrcode.getHeight() + 30,
                null);
 
+       // 设置“抗锯齿”的属性
+       g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+       g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+       //打印二维码名字
+       g.setFont(new Font("楷体", Font.PLAIN, 15));
+       g.setColor(Color.BLACK);
+       g.drawString("名片二维码", (int) x + qrcode.getWidth()/2 - 20, (int) y + qrcode.getHeight() + 50);
+
        //将用户信息打印在图片上
        //用户名字
        if(cardCustom.getName() != null) {
            g.setFont(new Font("楷体", Font.PLAIN, 77));
            g.setColor(Color.BLACK);
-           g.drawString(cardCustom.getName(), 10, 100);
+           g.drawString(cardCustom.getName(), 30, 185);
        }
 
-       int height = 150;
+       int height = 235;
        //用户职位
        if(cardCustom.getOccupation() != null) {
-           g.setFont(new Font("宋体",Font.PLAIN,30));
+           g.setFont(new Font("黑体",Font.PLAIN,30));
            g.setColor(Color.BLACK);
            for (String Occupation : cardCustom.getOccupation()) {
-               g.drawString(Occupation, 10, height);
-               height += 30;
+               g.drawString(Occupation, 50, height);
+               height += 40;
            }
        }
        //用户地址
        if(cardCustom.getAddress() != null) {
            height += 5;
-           g.setFont(new Font("宋体", Font.PLAIN, 20));
+           g.setFont(new Font("黑体", Font.PLAIN, 20));
            g.setColor(Color.BLACK);
            for (String Address : cardCustom.getAddress()) {
-               g.drawString("地址:" + Address, 20, height);
-               height += 20;
+               g.drawString("地址:" + Address, 60, height);
+               height += 30;
            }
        }
        //用户电话
        if(cardCustom.getPhone() != null) {
            height += 5;
-           g.setFont(new Font("宋体", Font.PLAIN, 20));
+           g.setFont(new Font("黑体", Font.PLAIN, 20));
            g.setColor(Color.BLACK);
            for (BigInteger Phone : cardCustom.getPhone()) {
-               g.drawString("电话:" + Phone, 20, height);
-               height += 20;
+               g.drawString("电话:" + Phone, 60, height);
+               height += 30;
            }
        }
        //用户邮箱
        if(cardCustom.getEmail() != null) {
            height += 5;
-           g.setFont(new Font("宋体", Font.PLAIN, 20));
+           g.setFont(new Font("黑体", Font.PLAIN, 20));
            g.setColor(Color.BLACK);
            for (String Email : cardCustom.getEmail()) {
-               g.drawString("邮箱:" + Email, 20, height);
-               height += 20;
+               g.drawString("邮箱:" + Email, 60, height);
+               height += 30;
            }
        }
        //将内存中的生成的名片返回
        return background;
+   }
+
+   //缩放图片方法
+   private static BufferedImage zoomInImage(BufferedImage originalImage, int width, int height) {
+       BufferedImage newImage = new BufferedImage(width, height, originalImage.getType());
+
+       Graphics g = newImage.getGraphics();
+       g.drawImage(originalImage, 0, 0, width, height, null);
+       g.dispose();
+       return newImage;
+   }
+
+   //裁剪图片方法
+   private static BufferedImage crop(BufferedImage source, int startX, int startY, int endX, int endY) {
+       int width = source.getWidth();
+       int height = source.getHeight();
+
+       if (startX <= -1) {
+           startX = 0;
+       }
+       if (startY <= -1) {
+           startY = 0;
+       }
+       if (endX <= -1) {
+           endX = width - 1;
+       }
+       if (endY <= -1) {
+           endY = height - 1;
+       }
+       BufferedImage result = new BufferedImage(endX, endY , source.getType());
+       for (int y = startY; y < endY+startY; y++) {
+           for (int x = startX; x < endX+startX; x++) {
+               int rgb = source.getRGB(x, y);
+               result.setRGB(x - startX, y - startY, rgb);
+           }
+       }
+       return result;
    }
 
    @Test
@@ -170,7 +231,7 @@ public class GenerateQRcode {
 
        BufferedImage image = GenerateQRcode.createQrcode(userCustom);
 
-       InputStream imagein = new FileInputStream("E:\\uploads\\template.png");
+       InputStream imagein = new FileInputStream("E:/uploads/template.png");
        BufferedImage background = ImageIO.read(imagein);
 
        BufferedImage result = GenerateQRcode.createImage(userCustom, image, background);

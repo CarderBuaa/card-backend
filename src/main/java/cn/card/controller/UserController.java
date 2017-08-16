@@ -132,9 +132,13 @@ public class UserController {
 			throw new UserNotFoundException();
 		}
 		//更新用户信息并且存在需要更改信息才更改
-		if(userCustom.getEmail() != null || userCustom.getAddress() != null || userCustom.getOccupation() != null
-				|| userCustom.getPhone() != null || userCustom.getName() != null)
+		if((userCustom.getEmail() != null && !userCustom.getEmail().isEmpty()) ||
+				(userCustom.getAddress() != null && !userCustom.getAddress().isEmpty()) ||
+				(userCustom.getOccupation() != null && !userCustom.getOccupation().isEmpty()) ||
+				(userCustom.getPhone() != null && !userCustom.getPhone().isEmpty()) ||
+				(userCustom.getName() != null && !userCustom.getName().equals(""))) {
 			userService.updateUserInfo(userQueryVo);
+		}
 
 		response.setStatus(HttpStatus.OK.value());
 	}
@@ -168,8 +172,6 @@ public class UserController {
 			throw new UserNotFoundException();
 		}
 
-		System.out.println(check + "\n");
-
 		//设置查询条件
 		CardQueryVo cardQueryVo = new CardQueryVo();
 		CardCustom cardCustom = new CardCustom();
@@ -182,8 +184,6 @@ public class UserController {
 
 		//设置返回信息
 		check.setCards(cardCustomList);
-
-		System.out.println(check);
 
 		return check;
 	}

@@ -22,7 +22,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="cardCustom.name != null and cardCustom.name != ''">
 				name=#{cardCustom.name},
 			</if>
-			<if test="cardCustom.occupation_list !=null and cardCustom.occupation_list != ''">
+			<if test="cardCustom.occupation_list != null and cardCustom.occupation_list != ''">
 				occupation_list=#{cardCustom.occupation_list},
 			</if>
 			<if test="cardCustom.email_list != null and cardCustom.email_list != ''">

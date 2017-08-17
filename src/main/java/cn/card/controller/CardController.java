@@ -24,6 +24,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.ShardedJedis;
+import redis.clients.jedis.ShardedJedisPool;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +51,12 @@ public class CardController {
     private CardService cardService;
     private TokenManager tokenManager;
     private UserService userService;
+    private JedisPool jedisPool;
+
+    @Autowired
+    public void setjedisPool(JedisPool jedisPool) {
+        this.jedisPool = jedisPool;
+    }
 
     @Autowired
     public void setCardService(CardService cardService) {
@@ -88,7 +98,6 @@ public class CardController {
                         CardCustom cardCustom,//接收前端的名片信息
                         HttpServletResponse response, HttpServletRequest request) throws Exception{
 
-        System.out.println(cardCustom);
         //获取当前的认证用户的用户名
         String token = request.getHeader("Access-Token");
         String username = tokenManager.getUsername(token);
@@ -184,42 +193,68 @@ public class CardController {
         if(check == null){
             throw new CardNotFoundException();
         }
-        //如果找到名片信息 则生成名片 并向前端返回
 
-        //从check中获取背景图片路径
-        String backgroundPath = path + "/" + check.getBackground();
+        Jedis jedis = null;
+        try {
+            //获取jedis对象
+            jedis = jedisPool.getResource();
 
-        //判断背景图片是否存在
-        File back = new File(backgroundPath);
-        //如果背景图片不存在 则抛出异常
-        if(!back.exists()){
-            throw new BackgroundImageNotFound();
+            //如果redis中已经缓存了图片
+            if (jedis.exists(("card_" + card_id.toString()).getBytes())) {
+
+                response.setContentType("image/png");
+                byte[] response_image = jedis.get(card_id.toString().getBytes());
+
+                OutputStream stream = response.getOutputStream();
+                stream.write(response_image);
+                response.setStatus(HttpStatus.OK.value());
+            }
+            //如果redis中没有缓存图片,则通过方法生成图片并返回，并且将图片字节数组放入redis中缓存
+            else {
+                //从check中获取背景图片路径
+                String backgroundPath = path + "/" + check.getBackground();
+
+                //判断背景图片是否存在
+                File back = new File(backgroundPath);
+                //如果背景图片不存在 则抛出异常
+                if (!back.exists()) {
+                    throw new BackgroundImageNotFound();
+                }
+
+                response.setContentType("image/png");
+
+                //如果找到背景图片 讲背景图片放入内存中
+                BufferedImage background = ImageIO.read(new FileInputStream(back));
+                //在内存中生成QRcode
+                BufferedImage Qrcode = GenerateQRcode.createQrcode(check);
+                //在内存中生成名片
+                BufferedImage card = GenerateQRcode.createImage(check, Qrcode, background);
+                //将内存的名片转化成字节流
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                ImageIO.write(card, "png", out);
+                //获取字节流
+                byte[] result = out.toByteArray();
+                //将字节制流写入response中
+                OutputStream stream = response.getOutputStream();
+                stream.write(result);
+
+                //将字节数组放入redis中
+                jedis.set(("card_" + card_id.toString()).getBytes(), result);
+                //设置图片的超时时间为3个小时
+                jedis.expire(("card_" + card_id.toString()).getBytes(), 10800);
+
+                //释放资源
+                Qrcode.flush();
+                card.flush();
+                stream.close();
+
+                response.setStatus(HttpStatus.OK.value());
+            }
         }
-
-        response.setContentType("image/png");
-
-        //如果找到背景图片 讲背景图片放入内存中
-        BufferedImage background = ImageIO.read(new FileInputStream(back));
-        //在内存中生成QRcode
-        BufferedImage Qrcode = GenerateQRcode.createQrcode(check);
-        //在内存中生成名片
-        BufferedImage card = GenerateQRcode.createImage(check, Qrcode, background);
-        //将内存的名片转化成字节流
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ImageIO.write(card, "png", out);
-        //获取字节流
-        byte[] result = out.toByteArray();
-        //将字节制流写入response中
-        OutputStream stream = response.getOutputStream();
-        stream.write(result);
-
-        //释放资源
-        Qrcode.flush();
-        card.flush();
-        stream.close();
-
-
-        response.setStatus(HttpStatus.OK.value());
+        finally {
+            //释放redis资源
+            jedis.close();
+        }
     }
 
     //用于修改已生成名片的数据

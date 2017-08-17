@@ -98,11 +98,11 @@ public class GenerateQRcode {
        Integer width_origin = background.getWidth();
        //将图片等比例放大
        if(height_origin < height_static || width_origin < width_static){
-            //比较两个的放大倍数
-           double height_compare = height_origin/height_static;
-           double width_compare = width_origin/width_static;
+           //比较两个的放大倍数
+           double height_compare = (double)height_static / height_origin;
+           double width_compare = (double)width_static / width_origin;
            double result = height_compare > width_compare ? height_compare : width_compare;
-           background = zoomInImage(background, (int)(width_origin * result), (int)(height_origin * result));
+           background = zoomInImage(background, (int)(width_origin * Math.ceil(result)), (int)(height_origin * Math.ceil(result)));
        }
        //将图片裁剪
        background = crop(background,0, 0, width_static, height_static);
@@ -231,7 +231,7 @@ public class GenerateQRcode {
 
        BufferedImage image = GenerateQRcode.createQrcode(userCustom);
 
-       InputStream imagein = new FileInputStream("E:/uploads/template.png");
+       InputStream imagein = new FileInputStream("E:/uploads/2.jpg");
        BufferedImage background = ImageIO.read(imagein);
 
        BufferedImage result = GenerateQRcode.createImage(userCustom, image, background);

@@ -14,8 +14,8 @@
 	<!-- 数据源使用c3p0连接池 -->
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
 		<property name="driverClass" value="${jdbc.driver}"/>
-		<property name="jdbcUrl" value="${jdbc.url}"></property>
-		<property name="user" value="${jdbc.username}"></property>
+		<property name="jdbcUrl" value="${jdbc.url}"/>
+		<property name="user" value="${jdbc.username}"/>
 		<property name="password" value="${jdbc.password}"/>
 		<property name="initialPoolSize" value="${c3p0.initialPoolSize}" />
         <property name="minPoolSize" value="${c3p0.minPoolSize}" />
@@ -44,5 +44,23 @@
 		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
 	</bean>
 
+	<!-- 配置redis数据连接 -->
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxTotal" value="${redis.pool.maxTotal}"/>
+		<property name="maxIdle" value="${redis.pool.maxIdle}"/>
+		<property name="minIdle" value="${redis.pool.minIdle}"/>
+		<property name="maxWaitMillis" value="${redis.pool.maxWaitMillis}"/>
+		<property name="testOnBorrow" value="true"/>
+		<property name="testOnReturn" value="true"/>
+	</bean>
+	<bean id="jedisPool" class="redis.clients.jedis.JedisPool">
+		<constructor-arg name="poolConfig" ref="jedisPoolConfig" />
+		<constructor-arg name="host" value="${redis.host}" />
+		<constructor-arg name="port" value="${redis.port}" type="int" />
+		<constructor-arg name="timeout" value="${redis.timeout}" type="int" />
+		<constructor-arg name="password" value="${redis.password}" />
+		<constructor-arg name="database" value="${redis.database}" type="int" />
+
+	</bean>
 
 </beans>

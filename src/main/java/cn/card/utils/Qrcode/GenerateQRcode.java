@@ -1,7 +1,6 @@
 package cn.card.utils.Qrcode;
 
 import cn.card.domain.CardCustom;
-import cn.card.domain.UserCustom;
 import com.swetake.util.Qrcode;
 import org.junit.Test;
 

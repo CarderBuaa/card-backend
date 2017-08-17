@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.font.GlyphVector;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.math.BigInteger;
@@ -88,7 +89,7 @@ public class GenerateQRcode {
    }
 
     /**
-     *
+     * description:以后可以把绘制方法写在一个方法里面
      * @param qrcode 存储在内存中的Qrcode
      * @param background 存储在内存中的背景图片
      */
@@ -107,73 +108,92 @@ public class GenerateQRcode {
        //将图片裁剪
        background = crop(background,0, 0, width_static, height_static);
 
-       Graphics2D g = background.createGraphics();
+       Graphics2D graphics2D = background.createGraphics();
+       Graphics graphics = background.getGraphics();
+
        double x = (background.getWidth()-qrcode.getWidth()-50);
        double y = (background.getHeight()/2-qrcode.getHeight()/2);
 
+       //设置透明度 提高文字的辨识度
+       graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.4f));
+       graphics2D.setColor(Color.WHITE);
+       graphics2D.setStroke(new BasicStroke(1f));
+       graphics2D.fillRect(0, 185-77, 800, 483-185+77-50 );
+       graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+
        //将生成的二维码绘制在背景图片上
-       g.drawImage(qrcode, (int) x, (int) y,
+       graphics2D.drawImage(qrcode, (int) x, (int) y,
                qrcode.getWidth() + 20,
                qrcode.getHeight() + 30,
                null);
 
-       // 设置“抗锯齿”的属性
-       g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-       g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
-       //打印二维码名字
-       g.setFont(new Font("楷体", Font.PLAIN, 15));
-       g.setColor(Color.BLACK);
-       g.drawString("名片二维码", (int) x + qrcode.getWidth()/2 - 20, (int) y + qrcode.getHeight() + 50);
-
-       //将用户信息打印在图片上
        //用户名字
        if(cardCustom.getName() != null) {
-           g.setFont(new Font("楷体", Font.PLAIN, 77));
-           g.setColor(Color.BLACK);
-           g.drawString(cardCustom.getName(), 30, 185);
+           Font font = new Font("楷体", Font.PLAIN, 77);
+           paint(font,graphics ,cardCustom.getName(), 35 ,185);
        }
 
        int height = 235;
        //用户职位
        if(cardCustom.getOccupation() != null) {
-           g.setFont(new Font("黑体",Font.PLAIN,30));
-           g.setColor(Color.BLACK);
+           Font font = new Font("黑体",Font.PLAIN,30);
            for (String Occupation : cardCustom.getOccupation()) {
-               g.drawString(Occupation, 50, height);
+               paint1(font, graphics, Occupation, 70, height);
                height += 40;
            }
        }
        //用户地址
        if(cardCustom.getAddress() != null) {
            height += 5;
-           g.setFont(new Font("黑体", Font.PLAIN, 20));
-           g.setColor(Color.BLACK);
+           Font font = new Font("黑体", Font.PLAIN, 20);
            for (String Address : cardCustom.getAddress()) {
-               g.drawString("地址:" + Address, 60, height);
-               height += 30;
+               //处理换行
+               if(Address.length() > 30){
+                   int count = (int)Math.ceil((double)Address.length() / 30);
+                   List<String> list = new ArrayList<>();
+                   for(int i = 0; i < count; i++) {
+                       if(i == count - 1){
+                           list.add(Address.substring(i * 30, Address.length()));
+                       }
+                       else {
+                           list.add(Address.substring(i * 30, i * 30 + 29));
+                       }
+                   }
+                   paint1(font, graphics, "地址:" + list.get(0), 90, height);
+                   height += 20;
+                   for(int i = 1 ; i < list.size() - 1; i ++){
+                       paint1(font, graphics, list.get(i), 140, height);
+                       height += 20;
+                   }
+               }
+               else {
+                   paint1(font, graphics, "地址:" + Address, 90, height);
+                   height += 30;
+               }
            }
        }
        //用户电话
        if(cardCustom.getPhone() != null) {
            height += 5;
-           g.setFont(new Font("黑体", Font.PLAIN, 20));
-           g.setColor(Color.BLACK);
+           Font font = new Font("黑体", Font.PLAIN, 20);
            for (BigInteger Phone : cardCustom.getPhone()) {
-               g.drawString("电话:" + Phone, 60, height);
+               paint1(font, graphics, "电话:" + Phone.toString(), 90, height);
                height += 30;
            }
        }
        //用户邮箱
        if(cardCustom.getEmail() != null) {
            height += 5;
-           g.setFont(new Font("黑体", Font.PLAIN, 20));
-           g.setColor(Color.BLACK);
+           Font font = new Font("黑体", Font.PLAIN, 20);
            for (String Email : cardCustom.getEmail()) {
-               g.drawString("邮箱:" + Email, 60, height);
+               paint1(font, graphics, "邮箱:" + Email, 90, height);
                height += 30;
            }
        }
+
+       graphics2D.dispose();
+       graphics.dispose();
+
        //将内存中的生成的名片返回
        return background;
    }
@@ -215,12 +235,49 @@ public class GenerateQRcode {
        return result;
    }
 
+   //绘制string方法
+   private static void paint(Font f, Graphics g, String content, int x, int y){
+       GlyphVector v = f.createGlyphVector(g.getFontMetrics(f).getFontRenderContext(), content);
+       Shape shape = v.getOutline();
+
+       Graphics2D gg = (Graphics2D) g;
+       //移动graphics2D原点到x,y
+       gg.translate(x,y);
+       // 设置“抗锯齿”的属性
+       gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+       gg.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,RenderingHints.VALUE_STROKE_DEFAULT);
+       gg.setColor(Color.WHITE);
+       gg.fill(shape);
+       gg.setColor(Color.BLACK);
+       gg.setStroke(new BasicStroke());
+       gg.draw(shape);
+       //将graphics2D原点重置
+       gg.translate(-x,-y);
+   }
+
+   //绘制string方法2
+   private static void paint1(Font f, Graphics g, String content, int x, int y){
+       GlyphVector v = f.createGlyphVector(g.getFontMetrics(f).getFontRenderContext(), content);
+       Shape shape = v.getOutline();
+
+       Graphics2D gg = (Graphics2D) g;
+       //移动graphics2D原点到x,y
+       gg.translate(x,y);
+       // 设置“抗锯齿”的属性
+       gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+       gg.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,RenderingHints.VALUE_STROKE_DEFAULT);
+       gg.setColor(Color.black);
+       gg.fill(shape);
+       //将graphics2D原点重置
+       gg.translate(-x,-y);
+   }
+
    @Test
    public void test() throws IOException {
        CardCustom userCustom = new CardCustom();
 
        userCustom.setName("sb");
-       List<String> Address = new ArrayList<String>(){{add("地址1");}};
+       List<String> Address = new ArrayList<String>(){{add("12312312312321314523154354514354353451432513451432513245143534543151435435512435345435435143514353451435143");}};
        userCustom.setAddress(Address);
        List<String> Email = new ArrayList<String>(){{add("a502982165@qq.com");}};
        userCustom.setEmail(Email);
@@ -248,5 +305,4 @@ public class GenerateQRcode {
        }
 
    }
-
 }

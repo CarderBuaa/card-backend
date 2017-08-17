@@ -166,6 +166,14 @@ public class CardController {
             throw new CardNotFoundException();
         }
 
+        //删除redis中名片信息
+        Jedis jedis = jedisPool.getResource();
+        if(jedis.exists(("card_" + card_id.toString()).getBytes())){
+            jedis.del(("card_" + card_id.toString()).getBytes());
+        }
+        //释放资源
+        jedis.close();
+
         //如果找到了对应的名片信息 删除名片
         cardService.deleteCard(cardQueryVo);
         response.setStatus(HttpStatus.OK.value());
@@ -241,7 +249,7 @@ public class CardController {
                 //将字节数组放入redis中
                 jedis.set(("card_" + card_id.toString()).getBytes(), result);
                 //设置图片的超时时间为3个小时
-                jedis.expire(("card_" + card_id.toString()).getBytes(), 10800);
+                jedis.expire(("card_" + card_id.toString()).getBytes(), 86400);
 
                 //释放资源
                 Qrcode.flush();

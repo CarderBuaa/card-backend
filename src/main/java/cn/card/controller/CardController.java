@@ -250,8 +250,8 @@ public class CardController {
 
                 //将字节数组放入redis中
                 jedis.set(("card_" + card_id.toString()).getBytes(), result);
-                //设置图片的超时时间为3个小时
-                jedis.expire(("card_" + card_id.toString()).getBytes(), 10200);
+                //设置图片的超时时间为一天
+                jedis.expire(("card_" + card_id.toString()).getBytes(), 86400);
 
                 //释放资源
                 Qrcode.flush();
@@ -265,7 +265,6 @@ public class CardController {
             //释放redis资源
             jedis.close();
         }
-        return;
     }
 
     //用于修改已生成名片的数据

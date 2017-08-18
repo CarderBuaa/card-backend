@@ -128,7 +128,7 @@ public class GenerateQRcode {
 
        //用户名字
        if(cardCustom.getName() != null) {
-           Font font = new Font("楷体", Font.PLAIN, 77);
+           Font font = new Font("幼圆", Font.PLAIN, 65);
            paint(font,graphics ,cardCustom.getName(), 35 ,185);
        }
 
@@ -275,7 +275,7 @@ public class GenerateQRcode {
    public void test() throws IOException {
        CardCustom userCustom = new CardCustom();
 
-       userCustom.setName("sb");
+       userCustom.setName("路新喜");
        List<String> Address = new ArrayList<String>(){{add("12312312312321314523154354514354353451432513451432513245143534543151435435512435345435435143514353451435143");}};
        userCustom.setAddress(Address);
        List<String> Email = new ArrayList<String>(){{add("a502982165@qq.com");}};

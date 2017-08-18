@@ -211,10 +211,12 @@ public class CardController {
             if (jedis.exists(("card_" + card_id.toString()).getBytes())) {
 
                 response.setContentType("image/png");
-                byte[] response_image = jedis.get(card_id.toString().getBytes());
+                byte[] response_image = jedis.get(("card_" + card_id.toString()).getBytes());
 
                 OutputStream stream = response.getOutputStream();
                 stream.write(response_image);
+
+                stream.close();
                 response.setStatus(HttpStatus.OK.value());
             }
             //如果redis中没有缓存图片,则通过方法生成图片并返回，并且将图片字节数组放入redis中缓存
@@ -249,7 +251,7 @@ public class CardController {
                 //将字节数组放入redis中
                 jedis.set(("card_" + card_id.toString()).getBytes(), result);
                 //设置图片的超时时间为3个小时
-                jedis.expire(("card_" + card_id.toString()).getBytes(), 86400);
+                jedis.expire(("card_" + card_id.toString()).getBytes(), 10200);
 
                 //释放资源
                 Qrcode.flush();
@@ -263,6 +265,7 @@ public class CardController {
             //释放redis资源
             jedis.close();
         }
+        return;
     }
 
     //用于修改已生成名片的数据

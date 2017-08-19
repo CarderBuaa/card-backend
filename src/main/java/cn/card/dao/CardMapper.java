@@ -1,29 +1,30 @@
 package cn.card.dao;
 
-import cn.card.domain.CardCustom;
-import cn.card.domain.CardQueryVo;
-
+import cn.card.domain.Card;
+import cn.card.domain.CardExample;
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
-/**
- * Description:用于card的新建和删除等操作
- * Created by z on 2017/7/31.
- */
 public interface CardMapper {
+    long countByExample(CardExample example);
 
-    //用于上传文件时向数据库中新建一个上传记录
-    void createRecord(CardQueryVo cardQueryVo);
+    int deleteByExample(CardExample example);
 
-    //用于在上传图片后向其中更新用户信息
-    void updateCardInfo(CardQueryVo cardQueryVo);
+    int deleteByPrimaryKey(Integer id);
 
-    //用于寻找一个用户的所有提交记录
-    List<CardCustom> findRecordList(CardQueryVo cardQueryVo);
+    int insert(Card record);
 
-    //删除一个名片
-    void deleteCard(CardQueryVo cardQueryVo);
+    int insertSelective(Card record);
 
-    //通过ID查找一个名片
-    CardCustom findCardByIDAndUsername(CardQueryVo cardQueryVo);
+    List<Card> selectByExample(CardExample example);
 
+    Card selectByPrimaryKey(Integer id);
+
+    int updateByExampleSelective(@Param("record") Card record, @Param("example") CardExample example);
+
+    int updateByExample(@Param("record") Card record, @Param("example") CardExample example);
+
+    int updateByPrimaryKeySelective(Card record);
+
+    int updateByPrimaryKey(Card record);
 }

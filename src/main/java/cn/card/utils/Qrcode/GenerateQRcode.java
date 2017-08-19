@@ -128,7 +128,7 @@ public class GenerateQRcode {
 
        //用户名字
        if(cardCustom.getName() != null) {
-           Font font = new Font("幼圆", Font.PLAIN, 65);
+           Font font = new Font("YouYuan", Font.PLAIN, 65);
            paint(font,graphics ,cardCustom.getName(), 35 ,185);
        }
 

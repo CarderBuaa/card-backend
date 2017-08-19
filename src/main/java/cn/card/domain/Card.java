@@ -1,31 +1,47 @@
 package cn.card.domain;
 
-/**
- * Description:card的pojo类，用来保存生成card的信息
- * Created by z on 2017/7/31.
- */
 public class Card {
-
-    //主键自增ID
     private Integer id;
-    //外键于user表的username
+
     private String username;
-    //用于存储背景图片的文件名
+
+    private Integer template;
+
     private String background;
-    //
-    private String name;
-    //以下信息基本同user
 
-    private String occupation_list;
-    private String email_list;
-    private String phone_list;
-    private String address_list;
+    private String logo;
 
-    public int getId() {
+    private Double logoX;
+
+    private Double logoY;
+
+    private Boolean name;
+
+    private Boolean occupation;
+
+    private Boolean email;
+
+    private Integer url;
+
+    private Boolean phoneWork;
+
+    private Boolean phoneMobile;
+
+    private Boolean phoneHome;
+
+    private Boolean addressWork;
+
+    private Boolean addressHome;
+
+    private Boolean faxHome;
+
+    private Boolean faxWork;
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -34,7 +50,15 @@ public class Card {
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.username = username == null ? null : username.trim();
+    }
+
+    public Integer getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(Integer template) {
+        this.template = template;
     }
 
     public String getBackground() {
@@ -42,61 +66,118 @@ public class Card {
     }
 
     public void setBackground(String background) {
-        this.background = background;
+        this.background = background == null ? null : background.trim();
     }
 
-    public String getName() {
+    public String getLogo() {
+        return logo;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo == null ? null : logo.trim();
+    }
+
+    public Double getLogoX() {
+        return logoX;
+    }
+
+    public void setLogoX(Double logoX) {
+        this.logoX = logoX;
+    }
+
+    public Double getLogoY() {
+        return logoY;
+    }
+
+    public void setLogoY(Double logoY) {
+        this.logoY = logoY;
+    }
+
+    public Boolean getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(Boolean name) {
         this.name = name;
     }
 
-    public String getOccupation_list() {
-        return occupation_list;
+    public Boolean getOccupation() {
+        return occupation;
     }
 
-    public void setOccupation_list(String occupation_list) {
-        this.occupation_list = occupation_list;
+    public void setOccupation(Boolean occupation) {
+        this.occupation = occupation;
     }
 
-    public String getEmail_list() {
-        return email_list;
+    public Boolean getEmail() {
+        return email;
     }
 
-    public void setEmail_list(String email_list) {
-        this.email_list = email_list;
+    public void setEmail(Boolean email) {
+        this.email = email;
     }
 
-    public String getPhone_list() {
-        return phone_list;
+    public Integer getUrl() {
+        return url;
     }
 
-    public void setPhone_list(String phone_list) {
-        this.phone_list = phone_list;
+    public void setUrl(Integer url) {
+        this.url = url;
     }
 
-    public String getAddress_list() {
-        return address_list;
+    public Boolean getPhoneWork() {
+        return phoneWork;
     }
 
-    public void setAddress_list(String address_list) {
-        this.address_list = address_list;
+    public void setPhoneWork(Boolean phoneWork) {
+        this.phoneWork = phoneWork;
     }
 
-    @Override
-    public String toString() {
-        return "Card{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", background='" + background + '\'' +
-                ", name='" + name + '\'' +
-                ", occupation_list='" + occupation_list + '\'' +
-                ", email_list='" + email_list + '\'' +
-                ", phone_list='" + phone_list + '\'' +
-                ", address_list='" + address_list + '\'' +
-                '}';
+    public Boolean getPhoneMobile() {
+        return phoneMobile;
+    }
+
+    public void setPhoneMobile(Boolean phoneMobile) {
+        this.phoneMobile = phoneMobile;
+    }
+
+    public Boolean getPhoneHome() {
+        return phoneHome;
+    }
+
+    public void setPhoneHome(Boolean phoneHome) {
+        this.phoneHome = phoneHome;
+    }
+
+    public Boolean getAddressWork() {
+        return addressWork;
+    }
+
+    public void setAddressWork(Boolean addressWork) {
+        this.addressWork = addressWork;
+    }
+
+    public Boolean getAddressHome() {
+        return addressHome;
+    }
+
+    public void setAddressHome(Boolean addressHome) {
+        this.addressHome = addressHome;
+    }
+
+    public Boolean getFaxHome() {
+        return faxHome;
+    }
+
+    public void setFaxHome(Boolean faxHome) {
+        this.faxHome = faxHome;
+    }
+
+    public Boolean getFaxWork() {
+        return faxWork;
+    }
+
+    public void setFaxWork(Boolean faxWork) {
+        this.faxWork = faxWork;
     }
 }
-

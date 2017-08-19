@@ -1,17 +1,30 @@
 package cn.card.dao;
 
-import cn.card.domain.UserCustom;
-import cn.card.domain.UserQueryVo;
+import cn.card.domain.User;
+import cn.card.domain.UserExample;
+import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 public interface UserMapper {
-	
-	//根据用户名查询用户
-	UserCustom findUserByUserName(UserQueryVo userQueryVo) throws Exception;
-	//根据用户名和密码查找用户
-	UserCustom findUserByUsernameAndPassword(UserQueryVo userQueryVo) throws Exception;
-	//新建用户
-	void createNewUser(UserQueryVo userQueryVo) throws Exception;
-	//修改用户信息
-	void updateUserInfo(UserQueryVo userQueryVo) throws Exception;
+    long countByExample(UserExample example);
 
+    int deleteByExample(UserExample example);
+
+    int deleteByPrimaryKey(String username);
+
+    int insert(User record);
+
+    int insertSelective(User record);
+
+    List<User> selectByExample(UserExample example);
+
+    User selectByPrimaryKey(String username);
+
+    int updateByExampleSelective(@Param("record") User record, @Param("example") UserExample example);
+
+    int updateByExample(@Param("record") User record, @Param("example") UserExample example);
+
+    int updateByPrimaryKeySelective(User record);
+
+    int updateByPrimaryKey(User record);
 }

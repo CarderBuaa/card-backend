@@ -1,8 +1,9 @@
-package cn.card.utils.access_token;
+package cn.card.controller.advice;
 
 import cn.card.exception.TokenException;
 import cn.card.exception.baseException.BaseException;
 import cn.card.utils.IgnoreSecurity.IgnoreSecurity;
+import cn.card.utils.access_token.TokenManager;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.web.bind.annotation.RequestAttribute;
@@ -41,7 +42,6 @@ public class SecurityAspect {
             return pjp.proceed();
 
         }
-
         //获取当前上下文的request的header信息
         RequestAttributes requestAttribute = RequestContextHolder.getRequestAttributes();
         ServletRequestAttributes sra = (ServletRequestAttributes) requestAttribute;

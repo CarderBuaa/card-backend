@@ -1,7 +1,7 @@
 package cn.card.service;
 
-import cn.card.domain.CardCustom;
-import cn.card.domain.CardQueryVo;
+
+import cn.card.domain.Card;
 
 import java.util.List;
 
@@ -12,17 +12,17 @@ import java.util.List;
 public interface CardService {
 
     //用于上传文件时向数据库中新建一个上传记录
-    void createRecord(CardQueryVo cardQueryVo) throws Exception;
+    void createRecord(Card card) throws Exception;
 
     //用于在上传图片后向其中更新用户信息
-    void updateCardInfo(CardQueryVo cardQueryVo) throws Exception;
+    void updateCardInfo(Card card) throws Exception;
 
     //用于寻找一个用户的所有提交记录
-    List<CardCustom> findRecordList(CardQueryVo cardQueryVo) throws Exception;
+    List<Card> findRecordList(Card card) throws Exception;
 
     //删除一个名片
-    void deleteCard(CardQueryVo cardQueryVo) throws Exception;
+    void deleteCard(Card card) throws Exception;
 
     //通过ID查找一个名片
-    CardCustom findCardByIDAndUsername(CardQueryVo cardQueryVo) throws Exception;
+    Card findCardByIDAndUsername(Card card) throws Exception;
 }

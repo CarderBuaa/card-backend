@@ -1,7 +1,7 @@
 package cn.card.service;
 
-import cn.card.domain.CardCustom;
-import cn.card.domain.CardQueryVo;
+
+import cn.card.domain.Card;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -24,82 +24,62 @@ public class CardServiceTest {
 	public void testfindRecordList() throws Exception {
 		CardService cardService = (CardService) applicationContext.getBean("cardService");
 
-		CardQueryVo cardQueryVo= new CardQueryVo();
+		Card card = new Card();
+		card.setUsername("sb");
 
-		cardQueryVo.setCardCustom(new CardCustom());
-		cardQueryVo.getCardCustom().setUsername("sb");
-
-		List<CardCustom> list = cardService.findRecordList(cardQueryVo);
+		List<Card> list = cardService.findRecordList(card);
 
 		System.out.println(list);
-		
+
 	}
 
 	@Test
 	public void testcreateRecord() throws Exception {
 		CardService cardService = (CardService) applicationContext.getBean("cardService");
 
-		CardQueryVo cardQueryVo = new CardQueryVo();
-		CardCustom cardCustom = new CardCustom();
+        Card card = new Card();
+        card.setUsername("sb");
+        card.setBackground("321312");
+        card.setTemplate(2);
 
-		cardCustom.setUsername("sb");
-		cardCustom.setBackground("321312");
+		cardService.createRecord(card);
 
-		cardQueryVo.setCardCustom(cardCustom);
-
-		cardService.createRecord(cardQueryVo);
-
-		List<String> address = new ArrayList<>();
-		address.add("地址咦");
-		cardCustom.setAddress(address);
-
-		cardService.updateCardInfo(cardQueryVo);
 	}
 
 	@Test
 	public void testupdateCardInfo() throws Exception {
 		CardService cardService = (CardService) applicationContext.getBean("cardService");
 
-		CardQueryVo cardQueryVo = new CardQueryVo();
-		CardCustom cardCustom = new CardCustom();
+		Card card = new Card();
 
-		cardCustom.setUsername("sb");
-		cardQueryVo.setCardCustom(cardCustom);
+		card.setId(5);
+		card.setTemplate(1);
 
-		//获取最新的提交记录
-		CardCustom cardCustom1 = cardService.findRecordList(cardQueryVo).get(cardService.findRecordList(cardQueryVo).size()-1);
+		card.setName(true);
 
-		cardCustom1.setName("小学弟1");
-		cardQueryVo.setCardCustom(cardCustom1);
-
-		cardService.updateCardInfo(cardQueryVo);
+		cardService.updateCardInfo(card);
 	}
 
 	@Test
 	public void testDelete() throws Exception{
 		CardService cardService = (CardService) applicationContext.getBean("cardService");
 
-		CardQueryVo cardQueryVo = new CardQueryVo();
-		CardCustom cardCustom = new CardCustom();
+		Card card = new Card();
+		card.setId(5);
 
-		cardCustom.setId(1);
-		cardQueryVo.setCardCustom(cardCustom);
-
-		cardService.deleteCard(cardQueryVo);
+		cardService.deleteCard(card);
 	}
 
 	@Test
 	public void testfindCardByID() throws Exception{
 		CardService cardService = (CardService) applicationContext.getBean("cardService");
 
-		CardQueryVo cardQueryVo = new CardQueryVo();
-		CardCustom cardCustom = new CardCustom();
+		Card card = new Card();
 
-		cardCustom.setId(11);
-		cardCustom.setUsername("a555");
-		cardQueryVo.setCardCustom(cardCustom);
+		card.setId(1);
+		card.setUsername("sb");
 
-		CardCustom cardCustom1 = cardService.findCardByIDAndUsername(cardQueryVo);
+		Card cardCustom1 = cardService.findCardByIDAndUsername(card);
 
 		System.out.println(cardCustom1);
 	}

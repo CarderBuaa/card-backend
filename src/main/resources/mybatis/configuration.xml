@@ -26,7 +26,7 @@
             <property name="trimStrings" value="true" />
         </javaModelGenerator>
 
-        <!-- mapper映射文件文职 -->
+        <!-- mapper映射文件 -->
         <sqlMapGenerator targetPackage="cn.card.dao"  targetProject="src/main/java">
             <property name="enableSubPackages" value="false" />
         </sqlMapGenerator>

@@ -1,16 +1,17 @@
 package cn.card.service;
 
-import cn.card.domain.UserCustom;
-import cn.card.domain.UserQueryVo;
-import org.springframework.stereotype.Service;
+import cn.card.domain.User;
 
+/**
+ * 用户service类
+ */
 public interface UserService {
 	//查询用户
-	UserCustom findUserByUserName(UserQueryVo userQueryVo) throws Exception;
+	User findUserByUserName(User user) throws Exception;
 	//新建用户
-	void createNewUser(UserQueryVo userQueryVo) throws Exception;
+	void createNewUser(User user) throws Exception;
 	//修改用户信息
-	void updateUserInfo(UserQueryVo userQueryVo) throws Exception;
+	void updateUserInfo(User user) throws Exception;
 	//根据账号和密码查询用户
-	UserCustom findUserByUsernameAndPassword(UserQueryVo userQueryVo) throws Exception;
+	User findUserByUsernameAndPassword(User user) throws Exception;
 }

@@ -13,8 +13,8 @@
     <result column="phone_home" jdbcType="BIGINT" property="phoneHome" />
     <result column="address_work" jdbcType="VARCHAR" property="addressWork" />
     <result column="address_home" jdbcType="VARCHAR" property="addressHome" />
-    <result column="fax_home" jdbcType="VARCHAR" property="faxHome" />
-    <result column="fax_work" jdbcType="VARCHAR" property="faxWork" />
+    <result column="fax_home" jdbcType="BIGINT" property="faxHome" />
+    <result column="fax_work" jdbcType="BIGINT" property="faxWork" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -117,8 +117,8 @@
     values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
       #{occupation,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, 
       #{phoneWork,jdbcType=BIGINT}, #{phoneMobile,jdbcType=BIGINT}, #{phoneHome,jdbcType=BIGINT}, 
-      #{addressWork,jdbcType=VARCHAR}, #{addressHome,jdbcType=VARCHAR}, #{faxHome,jdbcType=VARCHAR}, 
-      #{faxWork,jdbcType=VARCHAR})
+      #{addressWork,jdbcType=VARCHAR}, #{addressHome,jdbcType=VARCHAR}, #{faxHome,jdbcType=BIGINT}, 
+      #{faxWork,jdbcType=BIGINT})
   </insert>
   <insert id="insertSelective" parameterType="cn.card.domain.User">
     insert into user
@@ -198,10 +198,10 @@
         #{addressHome,jdbcType=VARCHAR},
       </if>
       <if test="faxHome != null">
-        #{faxHome,jdbcType=VARCHAR},
+        #{faxHome,jdbcType=BIGINT},
       </if>
       <if test="faxWork != null">
-        #{faxWork,jdbcType=VARCHAR},
+        #{faxWork,jdbcType=BIGINT},
       </if>
     </trim>
   </insert>
@@ -248,10 +248,10 @@
         address_home = #{record.addressHome,jdbcType=VARCHAR},
       </if>
       <if test="record.faxHome != null">
-        fax_home = #{record.faxHome,jdbcType=VARCHAR},
+        fax_home = #{record.faxHome,jdbcType=BIGINT},
       </if>
       <if test="record.faxWork != null">
-        fax_work = #{record.faxWork,jdbcType=VARCHAR},
+        fax_work = #{record.faxWork,jdbcType=BIGINT},
       </if>
     </set>
     <if test="_parameter != null">
@@ -271,8 +271,8 @@
       phone_home = #{record.phoneHome,jdbcType=BIGINT},
       address_work = #{record.addressWork,jdbcType=VARCHAR},
       address_home = #{record.addressHome,jdbcType=VARCHAR},
-      fax_home = #{record.faxHome,jdbcType=VARCHAR},
-      fax_work = #{record.faxWork,jdbcType=VARCHAR}
+      fax_home = #{record.faxHome,jdbcType=BIGINT},
+      fax_work = #{record.faxWork,jdbcType=BIGINT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -280,19 +280,19 @@
   <update id="updateByPrimaryKeySelective" parameterType="cn.card.domain.User">
     update user
     <set>
-      <if test="password != null">
+      <if test="password != null and password != ''">
         password = #{password,jdbcType=VARCHAR},
       </if>
-      <if test="name != null">
+      <if test="name != null and name != ''">
         name = #{name,jdbcType=VARCHAR},
       </if>
-      <if test="occupation != null">
+      <if test="occupation != null and occupation != ''">
         occupation = #{occupation,jdbcType=VARCHAR},
       </if>
-      <if test="email != null">
+      <if test="email != null and email != ''">
         email = #{email,jdbcType=VARCHAR},
       </if>
-      <if test="url != null">
+      <if test="url != null and url != ''">
         url = #{url,jdbcType=VARCHAR},
       </if>
       <if test="phoneWork != null">
@@ -304,17 +304,17 @@
       <if test="phoneHome != null">
         phone_home = #{phoneHome,jdbcType=BIGINT},
       </if>
-      <if test="addressWork != null">
+      <if test="addressWork != null and addressWork != null">
         address_work = #{addressWork,jdbcType=VARCHAR},
       </if>
-      <if test="addressHome != null">
+      <if test="addressHome != null and addressHome != null">
         address_home = #{addressHome,jdbcType=VARCHAR},
       </if>
       <if test="faxHome != null">
-        fax_home = #{faxHome,jdbcType=VARCHAR},
+        fax_home = #{faxHome,jdbcType=BIGINT},
       </if>
       <if test="faxWork != null">
-        fax_work = #{faxWork,jdbcType=VARCHAR},
+        fax_work = #{faxWork,jdbcType=BIGINT},
       </if>
     </set>
     where username = #{username,jdbcType=VARCHAR}
@@ -331,8 +331,8 @@
       phone_home = #{phoneHome,jdbcType=BIGINT},
       address_work = #{addressWork,jdbcType=VARCHAR},
       address_home = #{addressHome,jdbcType=VARCHAR},
-      fax_home = #{faxHome,jdbcType=VARCHAR},
-      fax_work = #{faxWork,jdbcType=VARCHAR}
+      fax_home = #{faxHome,jdbcType=BIGINT},
+      fax_work = #{faxWork,jdbcType=BIGINT}
     where username = #{username,jdbcType=VARCHAR}
   </update>
 </mapper>

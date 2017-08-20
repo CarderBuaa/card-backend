@@ -1,12 +1,13 @@
 package cn.card.dao;
 
+import cn.card.domain.User;
+import cn.card.domain.UserExample;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import cn.card.domain.UserCustom;
-import cn.card.domain.UserQueryVo;
+import java.util.List;
 
 public class UserMapperTest {
 
@@ -22,30 +23,21 @@ public class UserMapperTest {
 	public void testFindUserByUserName() throws Exception {
 		UserMapper userMapper = (UserMapper) applicationContext.getBean("userMapper");
 
-		UserQueryVo userQueryVo = new UserQueryVo();
+		User user =	userMapper.selectByPrimaryKey("test");
 
-		userQueryVo.setUserCustom(new UserCustom());
-		userQueryVo.getUserCustom().setUsername("a502982165");
-
-
-		UserCustom userCustom = userMapper.findUserByUserName(userQueryVo);
-
-		System.out.println(userCustom);
+		System.out.println(user);
 	}
 
 	@Test
 	public void testcreateNewUser() throws Exception {
 		UserMapper userMapper = (UserMapper) applicationContext.getBean("userMapper");
 
-		UserQueryVo userQueryVo = new UserQueryVo();
-		UserCustom userCustom = new UserCustom();
+		User user = new User();
 
-		userCustom.setUsername("a55555");
-		userCustom.setPassword("aa5665");
+		user.setUsername("a55");
+		user.setPassword("aa5665");
 
-		userQueryVo.setUserCustom(userCustom);
-
-		userMapper.createNewUser(userQueryVo);
+		System.out.println(userMapper.insertSelective(user));
 
 	}
 
@@ -53,31 +45,29 @@ public class UserMapperTest {
 	public void testupdateUserInfo() throws Exception {
 		UserMapper userMapper = (UserMapper) applicationContext.getBean("userMapper");
 
-		UserQueryVo userQueryVo = new UserQueryVo();
-		UserCustom userCustom = new UserCustom();
+		User user = new User();
+		user.setUsername("test");
+		user.setAddressHome("是这个地址嘛傻吊");
 
-		userCustom.setUsername("a555");
-		userCustom.setAddress_list("hhhhhhh;1111");
-		userCustom.setEmail_list("321321321321321");
-		userQueryVo.setUserCustom(userCustom);
-
-		userMapper.updateUserInfo(userQueryVo);
+		//int返回影响行数
+		System.out.println(userMapper.updateByPrimaryKeySelective(user));
 
 	}
 
 	@Test
-	public void testfind2() throws Exception {
-		UserMapper userService = (UserMapper) applicationContext.getBean("userMapper");
+	public void testFindByUserNameAndPassword() throws Exception {
+		UserMapper userMapper = (UserMapper) applicationContext.getBean("userMapper");
 
-		UserQueryVo userQueryVo = new UserQueryVo();
-		UserCustom userCustom = new UserCustom();
+		UserExample userExample = new UserExample();
+		//构造查询条件
+		UserExample.Criteria criteria = userExample.createCriteria();
+		criteria.andPasswordEqualTo("41324123");
+		criteria.andUsernameEqualTo("test");
 
-		userCustom.setUsername("a55555");
-		userCustom.setPassword("aa5665");
+		List<User> list = userMapper.selectByExample(userExample);
 
-		userQueryVo.setUserCustom(userCustom);
+		System.out.println(list.size()==0);
 
-		System.out.print(userService.findUserByUsernameAndPassword(userQueryVo));
 	}
 
 }

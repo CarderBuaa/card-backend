@@ -2,13 +2,12 @@ package cn.card.service;
 
 import static org.junit.Assert.*;
 
+import cn.card.domain.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import cn.card.domain.UserCustom;
-import cn.card.domain.UserQueryVo;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -27,66 +26,51 @@ public class UserServiceTest {
 	@Test
 	public void testFindUserByUserName() throws Exception {
 		UserService userService = (UserService) applicationContext.getBean("userService");
-		
-		UserQueryVo userQueryVo = new UserQueryVo();
-		
-		userQueryVo.setUserCustom(new UserCustom());
-		userQueryVo.getUserCustom().setUsername("a502982165");
-		try {
-			UserCustom userCustom = userService.findUserByUserName(userQueryVo);
-			System.out.println(userCustom);
-		}catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-		
+
+		User user = new User();
+
+		user.setUsername("sb");
+
+        User userCustom = userService.findUserByUserName(user);
+
+        System.out.println(userCustom);
+
 	}
 
 	@Test
 	public void testCreateNewUser() throws Exception {
 		UserService userService = (UserService) applicationContext.getBean("userService");
-		
-		UserQueryVo userQueryVo = new UserQueryVo();
-		UserCustom userCustom = new UserCustom();
-		
-		userCustom.setUsername("小强");
-		userCustom.setPassword("aa5665");
-		
-		userQueryVo.setUserCustom(userCustom);
-		
-		userService.createNewUser(userQueryVo);
+
+        User user = new User();
+
+        user.setUsername("小强");
+        user.setPassword("aa5665");
+
+		userService.createNewUser(user);
 	}
 
 	@Test
 	public void testUpdateUserInfo() throws Exception {
 		UserService userService = (UserService) applicationContext.getBean("userService");
-		
-		UserQueryVo userQueryVo = new UserQueryVo();
-		UserCustom userCustom = new UserCustom();
 
-		userCustom.setUsername("sb");
-		List<BigInteger> phone = new ArrayList<BigInteger>();
-		phone.add(new BigInteger("123123"));
-		phone.add(new BigInteger("312312"));
-		userCustom.setPhone(phone);
+        User user = new User();
 
-		userQueryVo.setUserCustom(userCustom);
-		
-		userService.updateUserInfo(userQueryVo);
+		user.setUsername("sb");
+        user.setAddressHome("傻吊 你的家在哪儿");
+
+		userService.updateUserInfo(user);
 	}
 
 	@Test
 	public void testfind2() throws Exception {
 		UserService userService = (UserService) applicationContext.getBean("userService");
 
-		UserQueryVo userQueryVo = new UserQueryVo();
-		UserCustom userCustom = new UserCustom();
+		User user = new User();
 
-		userCustom.setUsername("a55555");
-		userCustom.setPassword("aa5665");
+        user.setUsername("das");
+        user.setPassword("aa5665");
 
-		userQueryVo.setUserCustom(userCustom);
-
-		System.out.print(userService.findUserByUsernameAndPassword(userQueryVo));
+		System.out.print(userService.findUserByUsernameAndPassword(user));
 	}
 
 }

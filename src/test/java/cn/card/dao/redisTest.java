@@ -1,17 +1,11 @@
 package cn.card.dao;
 
-import cn.card.domain.CardCustom;
-import cn.card.domain.CardQueryVo;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.ShardedJedis;
-import redis.clients.jedis.ShardedJedisPool;
-
-import java.util.List;
 
 public class redisTest {
 
@@ -30,7 +24,11 @@ public class redisTest {
 
 		Jedis shardedJedis = shardedJedisPool.getResource();
 
-		System.out.println(shardedJedis);
+//		shardedJedis.set("1", "2");
+//		shardedJedis.expire("1", 20);
+
+		System.out.println(shardedJedis.ttl("1000"));
+
 		//释放redis资源
 		shardedJedis.close();
 	}

@@ -1,6 +1,5 @@
 package cn.card.utils.GenerateMD5;
 
-import cn.card.domain.UserCustom;
 import org.junit.Test;
 
 import java.security.MessageDigest;
@@ -61,10 +60,6 @@ public class MD5 {
     
     @Test
     public void testMD5(){
-        UserCustom userCustom = new UserCustom();
-        userCustom.setPassword("123456");
-        userCustom.setPassword(MD5.getMD5(userCustom.getPassword()));
-        System.out.print(userCustom.getPassword().equals(MD5.getMD5("123456")));
     }
 
 }

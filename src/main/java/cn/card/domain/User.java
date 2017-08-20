@@ -23,9 +23,9 @@ public class User {
 
     private String addressHome;
 
-    private String faxHome;
+    private Long faxHome;
 
-    private String faxWork;
+    private Long faxWork;
 
     public String getUsername() {
         return username;
@@ -115,19 +115,38 @@ public class User {
         this.addressHome = addressHome == null ? null : addressHome.trim();
     }
 
-    public String getFaxHome() {
+    public Long getFaxHome() {
         return faxHome;
     }
 
-    public void setFaxHome(String faxHome) {
-        this.faxHome = faxHome == null ? null : faxHome.trim();
+    public void setFaxHome(Long faxHome) {
+        this.faxHome = faxHome;
     }
 
-    public String getFaxWork() {
+    public Long getFaxWork() {
         return faxWork;
     }
 
-    public void setFaxWork(String faxWork) {
-        this.faxWork = faxWork == null ? null : faxWork.trim();
+    public void setFaxWork(Long faxWork) {
+        this.faxWork = faxWork;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", name='" + name + '\'' +
+                ", occupation='" + occupation + '\'' +
+                ", email='" + email + '\'' +
+                ", url='" + url + '\'' +
+                ", phoneWork=" + phoneWork +
+                ", phoneMobile=" + phoneMobile +
+                ", phoneHome=" + phoneHome +
+                ", addressWork='" + addressWork + '\'' +
+                ", addressHome='" + addressHome + '\'' +
+                ", faxHome=" + faxHome +
+                ", faxWork=" + faxWork +
+                '}';
     }
 }

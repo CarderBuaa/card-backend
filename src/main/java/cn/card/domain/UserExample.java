@@ -854,62 +854,52 @@ public class UserExample {
             return (Criteria) this;
         }
 
-        public Criteria andFaxHomeEqualTo(String value) {
+        public Criteria andFaxHomeEqualTo(Long value) {
             addCriterion("fax_home =", value, "faxHome");
             return (Criteria) this;
         }
 
-        public Criteria andFaxHomeNotEqualTo(String value) {
+        public Criteria andFaxHomeNotEqualTo(Long value) {
             addCriterion("fax_home <>", value, "faxHome");
             return (Criteria) this;
         }
 
-        public Criteria andFaxHomeGreaterThan(String value) {
+        public Criteria andFaxHomeGreaterThan(Long value) {
             addCriterion("fax_home >", value, "faxHome");
             return (Criteria) this;
         }
 
-        public Criteria andFaxHomeGreaterThanOrEqualTo(String value) {
+        public Criteria andFaxHomeGreaterThanOrEqualTo(Long value) {
             addCriterion("fax_home >=", value, "faxHome");
             return (Criteria) this;
         }
 
-        public Criteria andFaxHomeLessThan(String value) {
+        public Criteria andFaxHomeLessThan(Long value) {
             addCriterion("fax_home <", value, "faxHome");
             return (Criteria) this;
         }
 
-        public Criteria andFaxHomeLessThanOrEqualTo(String value) {
+        public Criteria andFaxHomeLessThanOrEqualTo(Long value) {
             addCriterion("fax_home <=", value, "faxHome");
             return (Criteria) this;
         }
 
-        public Criteria andFaxHomeLike(String value) {
-            addCriterion("fax_home like", value, "faxHome");
-            return (Criteria) this;
-        }
-
-        public Criteria andFaxHomeNotLike(String value) {
-            addCriterion("fax_home not like", value, "faxHome");
-            return (Criteria) this;
-        }
-
-        public Criteria andFaxHomeIn(List<String> values) {
+        public Criteria andFaxHomeIn(List<Long> values) {
             addCriterion("fax_home in", values, "faxHome");
             return (Criteria) this;
         }
 
-        public Criteria andFaxHomeNotIn(List<String> values) {
+        public Criteria andFaxHomeNotIn(List<Long> values) {
             addCriterion("fax_home not in", values, "faxHome");
             return (Criteria) this;
         }
 
-        public Criteria andFaxHomeBetween(String value1, String value2) {
+        public Criteria andFaxHomeBetween(Long value1, Long value2) {
             addCriterion("fax_home between", value1, value2, "faxHome");
             return (Criteria) this;
         }
 
-        public Criteria andFaxHomeNotBetween(String value1, String value2) {
+        public Criteria andFaxHomeNotBetween(Long value1, Long value2) {
             addCriterion("fax_home not between", value1, value2, "faxHome");
             return (Criteria) this;
         }
@@ -924,62 +914,52 @@ public class UserExample {
             return (Criteria) this;
         }
 
-        public Criteria andFaxWorkEqualTo(String value) {
+        public Criteria andFaxWorkEqualTo(Long value) {
             addCriterion("fax_work =", value, "faxWork");
             return (Criteria) this;
         }
 
-        public Criteria andFaxWorkNotEqualTo(String value) {
+        public Criteria andFaxWorkNotEqualTo(Long value) {
             addCriterion("fax_work <>", value, "faxWork");
             return (Criteria) this;
         }
 
-        public Criteria andFaxWorkGreaterThan(String value) {
+        public Criteria andFaxWorkGreaterThan(Long value) {
             addCriterion("fax_work >", value, "faxWork");
             return (Criteria) this;
         }
 
-        public Criteria andFaxWorkGreaterThanOrEqualTo(String value) {
+        public Criteria andFaxWorkGreaterThanOrEqualTo(Long value) {
             addCriterion("fax_work >=", value, "faxWork");
             return (Criteria) this;
         }
 
-        public Criteria andFaxWorkLessThan(String value) {
+        public Criteria andFaxWorkLessThan(Long value) {
             addCriterion("fax_work <", value, "faxWork");
             return (Criteria) this;
         }
 
-        public Criteria andFaxWorkLessThanOrEqualTo(String value) {
+        public Criteria andFaxWorkLessThanOrEqualTo(Long value) {
             addCriterion("fax_work <=", value, "faxWork");
             return (Criteria) this;
         }
 
-        public Criteria andFaxWorkLike(String value) {
-            addCriterion("fax_work like", value, "faxWork");
-            return (Criteria) this;
-        }
-
-        public Criteria andFaxWorkNotLike(String value) {
-            addCriterion("fax_work not like", value, "faxWork");
-            return (Criteria) this;
-        }
-
-        public Criteria andFaxWorkIn(List<String> values) {
+        public Criteria andFaxWorkIn(List<Long> values) {
             addCriterion("fax_work in", values, "faxWork");
             return (Criteria) this;
         }
 
-        public Criteria andFaxWorkNotIn(List<String> values) {
+        public Criteria andFaxWorkNotIn(List<Long> values) {
             addCriterion("fax_work not in", values, "faxWork");
             return (Criteria) this;
         }
 
-        public Criteria andFaxWorkBetween(String value1, String value2) {
+        public Criteria andFaxWorkBetween(Long value1, Long value2) {
             addCriterion("fax_work between", value1, value2, "faxWork");
             return (Criteria) this;
         }
 
-        public Criteria andFaxWorkNotBetween(String value1, String value2) {
+        public Criteria andFaxWorkNotBetween(Long value1, Long value2) {
             addCriterion("fax_work not between", value1, value2, "faxWork");
             return (Criteria) this;
         }

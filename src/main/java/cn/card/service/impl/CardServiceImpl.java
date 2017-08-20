@@ -1,11 +1,15 @@
 package cn.card.service.impl;
 
 import cn.card.dao.CardMapper;
-import cn.card.domain.CardCustom;
-import cn.card.domain.CardQueryVo;
+import cn.card.domain.Card;
+
+import cn.card.domain.CardExample;
+import cn.card.exception.CardNotFoundException;
+import cn.card.exception.baseException.BaseException;
 import cn.card.service.CardService;
-import cn.card.utils.TransferData.TransferCard;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * Description:
+ * Description: card的service类
  * Created by z on 2017/7/31.
  */
 @Service("cardService")
@@ -28,40 +32,64 @@ public class CardServiceImpl implements CardService{
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public void createRecord(CardQueryVo cardQueryVo) throws Exception{
-        cardMapper.createRecord(cardQueryVo);
-    }
+    public void createRecord(Card card) throws Exception{
 
-    @Transactional(propagation = Propagation.REQUIRED)
-    @Override
-    public void updateCardInfo(CardQueryVo cardQueryVo) throws Exception{
-        TransferCard.transferToString(cardQueryVo.getCardCustom());
-        cardMapper.updateCardInfo(cardQueryVo);
-    }
-
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    @Override
-    public List<CardCustom> findRecordList(CardQueryVo cardQueryVo) throws Exception{
-        List<CardCustom> list = cardMapper.findRecordList(cardQueryVo);
-        for (CardCustom cardCustom : list){
-            TransferCard.transferToList(cardCustom);
+        //background,template,usernanme为card的非空项
+        if((card.getBackground() == null || card.getBackground().equals("")) ||
+                (card.getTemplate() == null) ||
+                (card.getUsername() == null || card.getUsername().equals(""))){
+            throw new BaseException(HttpStatus.BAD_REQUEST, "card信息非空项为空出错");
         }
-        return list;
+        cardMapper.insertSelective(card);
     }
 
-    //cardQueryVo必须要设置cardCustom ID主键
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public void deleteCard(CardQueryVo cardQueryVo) throws Exception{
-        cardMapper.deleteCard(cardQueryVo);
+    public void updateCardInfo(Card card) throws Exception{
+        //id要一定存在
+        if(card.getId() == null){
+            throw new BaseException(HttpStatus.BAD_REQUEST, "用户名片ID不存在于上传信息中");
+        }
+        cardMapper.updateByPrimaryKeySelective(card);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Override
+    public List<Card> findRecordList(Card card) throws Exception{
+
+        //设置查询条件
+        CardExample example = new CardExample();
+        CardExample.Criteria criteria = example.createCriteria();
+        criteria.andUsernameEqualTo(card.getUsername());
+
+        return cardMapper.selectByExample(example);
+    }
+
+    //设置card ID主键
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void deleteCard(Card card) throws Exception{
+        if(card.getId() == null){
+            throw new BaseException(HttpStatus.BAD_REQUEST, "名片ID不能为空");
+        }
+        cardMapper.deleteByPrimaryKey(card.getId());
     }
 
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     @Override
-    public CardCustom findCardByIDAndUsername(CardQueryVo cardQueryVo) throws Exception{
-        CardCustom cardCustom = cardMapper.findCardByIDAndUsername(cardQueryVo);
-        TransferCard.transferToList(cardCustom);
-        return cardCustom;
+    public Card findCardByIDAndUsername(Card card) throws Exception{
+        //设置查询条件
+        CardExample example = new CardExample();
+        CardExample.Criteria criteria = example.createCriteria();
+        criteria.andIdEqualTo(card.getId());
+        criteria.andUsernameEqualTo(card.getUsername());
+
+        List<Card> list = cardMapper.selectByExample(example);
+        //list为空可能为空
+        if(list == null || list.isEmpty()){
+            throw new CardNotFoundException();
+        }
+        return list.get(0);
     }
 }

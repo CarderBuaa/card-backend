@@ -1,9 +1,7 @@
 package cn.card.dao;
 
-import cn.card.domain.CardCustom;
-import cn.card.domain.CardQueryVo;
-import cn.card.domain.UserCustom;
-import cn.card.domain.UserQueryVo;
+import cn.card.domain.Card;
+import cn.card.domain.CardExample;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -25,12 +23,12 @@ public class cardMapperTest {
 	public void testfindRecordList() throws Exception {
 		CardMapper cardMapper = (CardMapper) applicationContext.getBean("cardMapper");
 
-		CardQueryVo cardQueryVo= new CardQueryVo();
+		CardExample example = new CardExample();
+		//设置查询条件
+		CardExample.Criteria criteria = example.createCriteria();
+		criteria.andUsernameEqualTo("sb");
 
-		cardQueryVo.setCardCustom(new CardCustom());
-		cardQueryVo.getCardCustom().setUsername("sb");
-
-		List<CardCustom> list = cardMapper.findRecordList(cardQueryVo);
+		List<Card> list = cardMapper.selectByExample(example);
 
 		System.out.println(list);
 	}
@@ -39,17 +37,15 @@ public class cardMapperTest {
 	public void testcreateRecord() throws Exception {
 		CardMapper cardMapper = (CardMapper) applicationContext.getBean("cardMapper");
 
-		CardQueryVo cardQueryVo = new CardQueryVo();
-		CardCustom cardCustom = new CardCustom();
+		Card card = new Card();
 
-		cardCustom.setUsername("sb");
-		cardCustom.setBackground("312312");
+		card.setUsername("sb");
+		card.setBackground("312312");
+		card.setTemplate(1);
 
-		cardQueryVo.setCardCustom(cardCustom);
+		cardMapper.insertSelective(card);
 
-		cardMapper.createRecord(cardQueryVo);
-
-		System.out.println(cardQueryVo.getCardCustom().getId());
+		System.out.println(card.getId());
 
 	}
 
@@ -57,19 +53,13 @@ public class cardMapperTest {
 	public void testupdateCardInfo() throws Exception {
 		CardMapper cardMapper = (CardMapper) applicationContext.getBean("cardMapper");
 
-		CardQueryVo cardQueryVo = new CardQueryVo();
-		CardCustom cardCustom = new CardCustom();
+		Card card = new Card();
 
-		cardCustom.setUsername("sb");
-		cardQueryVo.setCardCustom(cardCustom);
+		card.setUsername("sb");
+		card.setId(2);
+		card.setEmail(true);
 
-		//获取最新的提交记录
-		CardCustom cardCustom1 = cardMapper.findRecordList(cardQueryVo).get(cardMapper.findRecordList(cardQueryVo).size()-1);
-
-		cardCustom1.setName("小学弟");
-		cardQueryVo.setCardCustom(cardCustom1);
-
-		cardMapper.updateCardInfo(cardQueryVo);
+		cardMapper.updateByPrimaryKeySelective(card);
 
 	}
 
@@ -77,29 +67,25 @@ public class cardMapperTest {
 	public void testDelete() throws Exception{
 		CardMapper cardMapper = (CardMapper) applicationContext.getBean("cardMapper");
 
-		CardQueryVo cardQueryVo = new CardQueryVo();
-		CardCustom cardCustom = new CardCustom();
+		Card card = new Card();
+		card.setId(2);
+		cardMapper.deleteByPrimaryKey(card.getId());
 
-		cardCustom.setId(10);
-		cardQueryVo.setCardCustom(cardCustom);
-
-		cardMapper.deleteCard(cardQueryVo);
 	}
 
 	@Test
-	public void testfindCardByID() throws Exception{
+	public void testfindCardByIDAndUsername() throws Exception{
 		CardMapper cardMapper = (CardMapper) applicationContext.getBean("cardMapper");
 
-		CardQueryVo cardQueryVo = new CardQueryVo();
-		CardCustom cardCustom = new CardCustom();
+		CardExample example = new CardExample();
+		CardExample.Criteria criteria = example.createCriteria();
+		criteria.andIdEqualTo(3);
+		criteria.andUsernameEqualTo("sb");
 
-		cardCustom.setId(11);
-		cardCustom.setUsername("a555");
-		cardQueryVo.setCardCustom(cardCustom);
+		List<Card> list = cardMapper.selectByExample(example);
+		System.out.println(list);
 
-		CardCustom cardCustom1 = cardMapper.findCardByIDAndUsername(cardQueryVo);
 
-		System.out.println(cardCustom1);
 	}
 
 

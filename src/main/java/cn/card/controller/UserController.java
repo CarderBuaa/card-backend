@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletResponse;
 import cn.card.domain.*;
 import cn.card.exception.*;
 import cn.card.service.CardService;
-import cn.card.utils.GenerateMD5.MD5;
 import cn.card.utils.IgnoreSecurity.IgnoreSecurity;
 import cn.card.utils.access_token.TokenManager;
 import cn.card.utils.propertyReader.PropertyReader;
@@ -14,19 +13,17 @@ import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import cn.card.service.UserService;
+import redis.clients.jedis.JedisPool;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 /**
- * 
+ *
  * Description: 控制用户行为的controller
  * @author z
  * @date 2017年7月26日
@@ -41,7 +38,7 @@ public class UserController {
 	private TokenManager tokenManager;
 	private CardService cardService;
 
-	@Autowired
+    @Autowired
 	public void setUserService(UserService userService) {
 		this.userService = userService;
 	}
@@ -59,53 +56,30 @@ public class UserController {
 	//注册方法不需要检查token
 	@IgnoreSecurity
 	@RequestMapping(value="/user",method=RequestMethod.POST)
-	public void createUserController(@Validated UserCustom userCustom, BindingResult result,
+	public void createUserController(User user,
 									 HttpServletResponse response) throws Exception{
-
-		//没想到好的写法 囧
-		if(result.hasErrors()){
-			List<ObjectError> allErrors = result.getAllErrors();
-			for (ObjectError error: allErrors) {
-				throw new UserNameisNull(error.getDefaultMessage());
-			}
-		}
-		//以后可以使用hibernate validation来进行验证
-		if(userCustom.getUsername().getBytes().length > 30 || userCustom.getUsername().getBytes().length == 0){
-			throw new IllegalUsernameException();
-		}
-
-		//新建查询对象
-		UserQueryVo userQueryVo = new UserQueryVo();
-		userQueryVo.setUserCustom(userCustom);
-
-		//生成密码的MD5值并保存
-		userCustom.setPassword(MD5.getMD5(userCustom.getPassword()));
-
 		//寻找用户名
-		UserCustom check = userService.findUserByUserName(userQueryVo);
+		User check = userService.findUserByUserName(user);
 		//用户名已存在
 		if (check != null) {
 			throw new UserExistException();
 		}
-		
 		//创建用户
-		userService.createNewUser(userQueryVo);
+		userService.createNewUser(user);
 
 		//在第一个用户注册时候就为所有用户创建上传图片文件夹
-
 		//在设置的上传路径下创建一个上传文件夹路径
 		String upload = PropertyReader.getUploadPath();
 		File uploads = new File(upload);
 		if(!uploads.exists()){
 			uploads.mkdir();
 		}
-
 		response.setStatus(HttpStatus.OK.value());
 	}
 
 	@RequestMapping(value="/user/{username}",method= RequestMethod.PUT)
 	public void editUserController(@PathVariable("username") String username,
-								   @RequestBody UserCustom userCustom,
+								   @RequestBody User user,
 								   HttpServletRequest request,
 								   HttpServletResponse response) throws Exception {
 		//对中文路径编码问题的处理
@@ -121,31 +95,22 @@ public class UserController {
 		}
 
 		//新建查询对象
-		userCustom.setUsername(username);
-		UserQueryVo userQueryVo = new UserQueryVo();
-		userQueryVo.setUserCustom(userCustom);
+		user.setUsername(username);
 
 		//寻找用户
-		UserCustom check = userService.findUserByUserName(userQueryVo);
+		User check = userService.findUserByUserName(user);
 		//用户不存在
 		if (check == null) {
 			throw new UserNotFoundException();
 		}
-		//更新用户信息并且存在需要更改信息才更改
-		if((userCustom.getEmail() != null && !userCustom.getEmail().isEmpty()) ||
-				(userCustom.getAddress() != null && !userCustom.getAddress().isEmpty()) ||
-				(userCustom.getOccupation() != null && !userCustom.getOccupation().isEmpty()) ||
-				(userCustom.getPhone() != null && !userCustom.getPhone().isEmpty()) ||
-				(userCustom.getName() != null && !userCustom.getName().equals(""))) {
-			userService.updateUserInfo(userQueryVo);
-		}
 
+        userService.updateUserInfo(user);
 		response.setStatus(HttpStatus.OK.value());
 	}
 
 	@RequestMapping(value="/user/{username}",method = RequestMethod.GET)
 	public @ResponseBody UserCustom getUserController(@PathVariable("username") String username,
-													  HttpServletRequest request) throws Exception {
+                                                HttpServletRequest request) throws Exception {
 
 		//对中文路径编码问题的处理
 		username = new String(username.getBytes("ISO-8859-1"), "utf8");
@@ -160,64 +125,47 @@ public class UserController {
 		}
 
 		//新建查询对象
-		UserCustom userCustom = new UserCustom();
-		userCustom.setUsername(username);
-		UserQueryVo userQueryVo = new UserQueryVo();
-		userQueryVo.setUserCustom(userCustom);
+		User user = new User();
+        user.setUsername(username);
 
-		//寻找用户名
-		UserCustom check = userService.findUserByUserName(userQueryVo);
+		//寻找用户
+        User check = userService.findUserByUserName(user);
 		//用户不存在
 		if (check == null) {
 			throw new UserNotFoundException();
 		}
 
 		//设置查询条件
-		CardQueryVo cardQueryVo = new CardQueryVo();
-		CardCustom cardCustom = new CardCustom();
-		cardCustom.setUsername(username);
+        UserCustom userCustom = new UserCustom(check);
+		userCustom.setPassword(null);
 
-		cardQueryVo.setCardCustom(cardCustom);
+		Card card = new Card();
+        card.setUsername(username);
 
 		//根据username查询当前用户所有的card信息
-		List<CardCustom> cardCustomList =  cardService.findRecordList(cardQueryVo);
+		List<Card> cardCustomList = cardService.findRecordList(card);
 
 		//设置返回信息
-		check.setCards(cardCustomList);
+        userCustom.setCards(cardCustomList);
 
-		return check;
+		return userCustom;
 	}
 
 	//登录方法不用检查Token
 	@IgnoreSecurity
 	@RequestMapping(value="/user/accesstoken",method=RequestMethod.POST)
-	public void getAccessToken(@Validated UserCustom userCustom, BindingResult result,
+	public void getAccessToken(User user,
 							   HttpServletResponse response) throws Exception {
 
-		//验证没想到好的写法 囧
-		if(result.hasErrors()){
-			List<ObjectError> allErrors = result.getAllErrors();
-			for (ObjectError error: allErrors) {
-				throw new UserNameisNull(error.getDefaultMessage());
-			}
+		if(user.getUsername() == null || user.getUsername().equals("")
+				|| user.getPassword() == null || user.getPassword().equals("")){
+			throw new UserNameisNull("用户名和密码不能为空");
 		}
 
-		//生成密码的MD5值并保存
-		userCustom.setPassword(MD5.getMD5(userCustom.getPassword()));
-
-		//检查用户账号密码
-		UserQueryVo userQueryVo = new UserQueryVo();
-		userQueryVo.setUserCustom(userCustom);
-
-		UserCustom check = userService.findUserByUsernameAndPassword(userQueryVo);
-
-		//账号密码不正确
-		if(check == null){
-			throw new PawordWrongException();
-		}
+		User check = userService.findUserByUsernameAndPassword(user);
 
 		//获取当前用户生成的token
-		String token = tokenManager.createToken(userCustom.getUsername());
+		String token = tokenManager.createToken(check.getUsername());
 
 		//将token变成JSON放入response中
 		JSONObject jsonObj = new JSONObject();
@@ -229,5 +177,6 @@ public class UserController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 	}
 }

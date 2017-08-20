@@ -38,7 +38,7 @@ public class CardServiceImpl implements CardService{
         if((card.getBackground() == null || card.getBackground().equals("")) ||
                 (card.getTemplate() == null) ||
                 (card.getUsername() == null || card.getUsername().equals(""))){
-            throw new BaseException(HttpStatus.BAD_REQUEST, "card信息非空项为空出错");
+            throw new BaseException(HttpStatus.BAD_REQUEST, "card信息非空项为空");
         }
         cardMapper.insertSelective(card);
     }

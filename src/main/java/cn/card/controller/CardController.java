@@ -1,185 +1,184 @@
-//package cn.card.controller;
-//
-//import cn.card.domain.CardCustom;
-//import cn.card.domain.CardQueryVo;
-//import cn.card.domain.UserCustom;
-//import cn.card.domain.UserQueryVo;
-//import cn.card.exception.BackgroundImageNotFound;
-//import cn.card.exception.CardNotFoundException;
-//import cn.card.service.CardService;
-//import cn.card.service.UserService;
-//import cn.card.utils.IgnoreSecurity.IgnoreSecurity;
+package cn.card.controller;
+
+
+import cn.card.domain.Card;
+
+import cn.card.exception.BackgroundImageNotFound;
+import cn.card.exception.CardNotFoundException;
+import cn.card.exception.baseException.BaseException;
+import cn.card.service.CardService;
+import cn.card.utils.IgnoreSecurity.IgnoreSecurity;
 //import cn.card.utils.Qrcode.GenerateQRcode;
-//import cn.card.utils.TransferData.TransferCard;
-//import cn.card.utils.access_token.TokenManager;
-//
-//import java.awt.image.BufferedImage;
-//import java.io.ByteArrayOutputStream;
-//import java.io.FileInputStream;
-//import java.util.List;
-//
-//import cn.card.utils.propertyReader.PropertyReader;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.stereotype.Controller;
-//import org.springframework.web.bind.annotation.*;
-//import org.springframework.web.multipart.MultipartFile;
-//import redis.clients.jedis.Jedis;
-//import redis.clients.jedis.JedisPool;
-//import redis.clients.jedis.ShardedJedis;
-//import redis.clients.jedis.ShardedJedisPool;
-//
-//import javax.imageio.ImageIO;
-//import javax.servlet.http.HttpServletRequest;
-//import javax.servlet.http.HttpServletResponse;
-//import java.io.File;
-//import java.io.OutputStream;
-//import java.util.UUID;
-//
-///**
-// * Description: 控制名片行为的controller
-// * Created by z on 2017/7/27.
-// */
-////添加跨域请求支持
-//@CrossOrigin
-//@Controller
-//public class CardController {
-//
-//
-//    private static String path = PropertyReader.getUploadPath();
-//
-//    private CardService cardService;
-//    private TokenManager tokenManager;
-//    private UserService userService;
-//    private JedisPool jedisPool;
-//
-//    @Autowired
-//    public void setjedisPool(JedisPool jedisPool) {
-//        this.jedisPool = jedisPool;
-//    }
-//
-//    @Autowired
-//    public void setCardService(CardService cardService) {
-//        this.cardService = cardService;
-//    }
-//
-//    @Autowired
-//    public void setTokenManager(TokenManager tokenManager) {
-//        this.tokenManager = tokenManager;
-//    }
-//
-//    @Autowired
-//    public void setUserService(UserService userService) {
-//        this.userService = userService;
-//    }
-//
-//    //用于返回当前用户信息 用于下拉菜单用户选择自己的信息生成key-value
-//    @RequestMapping(value = "/card/userInfo", method = RequestMethod.GET)
-//    public @ResponseBody UserCustom queryUser(HttpServletRequest request) throws Exception {
-//
-//        //获取当前的认证用户的用户名
-//        String token = request.getHeader("Access-Token");
-//        String username = tokenManager.getUsername(token);
-//
-//
-//        //设置查找信息
-//        UserQueryVo userQueryVo = new UserQueryVo();
-//        UserCustom userCustom = new UserCustom();
-//        userCustom.setUsername(username);
-//        userQueryVo.setUserCustom(userCustom);
-//
-//        return userService.findUserByUserName(userQueryVo);
-//    }
-//
-//
-//    //上传图片和名片信息
-//    @RequestMapping(value = "/card",method = RequestMethod.POST)
-//    public void addCard(@RequestParam(value = "image", required = false) MultipartFile image,//接收前端的图片文件
-//                        CardCustom cardCustom,//接收前端的名片信息
-//                        HttpServletResponse response, HttpServletRequest request) throws Exception{
-//
-//        //获取当前的认证用户的用户名
-//        String token = request.getHeader("Access-Token");
-//        String username = tokenManager.getUsername(token);
-//
-//        //设置查询条件
-//        CardQueryVo cardQueryVo = new CardQueryVo();
-//        cardCustom.setUsername(username);
-//
-//        //如果有上传图片 则保存图片 并将背景图片文件名写入数据库中
-//        if (image != null){
-//            //保存文件扩展名
-//            String ex = image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
-//            //重新生成UUID文件名
-//            String filename = UUID.randomUUID() + ex;
-//            //保存文件到上传目录文件
-//            image.transferTo(new File(path + "/" + filename));
-//            //保存文件名
-//            cardCustom.setBackground(filename);
-//        }
-//        //如果上传时没有图片 则用默认的背景
-//        else {
-//            cardCustom.setBackground("template.png");
-//        }
-//        //将前端的信息转化
-//        TransferCard.transferToString(cardCustom);
-//
-//        //将以上信息保存
-//        cardQueryVo.setCardCustom(cardCustom);
-//
-//        //创建卡片信息并且存在需要信息才创建
-//        if((cardCustom.getEmail() != null && !cardCustom.getEmail().isEmpty()) ||
-//                (cardCustom.getAddress() != null && !cardCustom.getAddress().isEmpty()) ||
-//                (cardCustom.getOccupation() != null && !cardCustom.getOccupation().isEmpty()) ||
-//                (cardCustom.getPhone() != null && !cardCustom.getPhone().isEmpty()) ||
-//                (cardCustom.getName() != null && !cardCustom.getName().equals(""))){
-//            //创建新的card记录
-//            cardService.createRecord(cardQueryVo);
-//
-//            //再将card内的其他信息保存到数据库中
-//            cardService.updateCardInfo(cardQueryVo);
-//        }
-//
-//        response.setStatus(HttpStatus.OK.value());
-//    }
-//
-//    //用于删除生成的名片
-//    @RequestMapping(value = "/card/{card_id}",method = RequestMethod.DELETE)
-//    public void deleteCard(HttpServletRequest request, HttpServletResponse response,
-//                           @PathVariable("card_id") Integer card_id) throws Exception{
-//
-//        //获取当前的认证用户的用户名
-//        String token = request.getHeader("Access-Token");
-//        String username = tokenManager.getUsername(token);
-//
-//        //设置查询条件
-//        CardQueryVo cardQueryVo = new CardQueryVo();
-//        CardCustom cardCustom = new CardCustom();
-//        //必须设置cardCustom的ID
-//        cardCustom.setId(card_id);
-//        cardCustom.setUsername(username);
-//        cardQueryVo.setCardCustom(cardCustom);
-//
-//        CardCustom check = cardService.findCardByIDAndUsername(cardQueryVo);
-//        //如果找不到ID的名片信息 就抛出名片不存在异常
-//        if(check == null){
-//            throw new CardNotFoundException();
-//        }
-//
-//        //删除redis中名片信息
-//        Jedis jedis = jedisPool.getResource();
-//        if(jedis.exists(("card_" + card_id.toString()).getBytes())){
-//            jedis.del(("card_" + card_id.toString()).getBytes());
-//        }
-//        //释放资源
-//        jedis.close();
-//
-//        //如果找到了对应的名片信息 删除名片
-//        cardService.deleteCard(cardQueryVo);
-//        response.setStatus(HttpStatus.OK.value());
-//
-//    }
-//
+import cn.card.utils.access_token.TokenManager;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.util.List;
+
+import cn.card.utils.propertyReader.PropertyReader;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.OutputStream;
+import java.util.UUID;
+
+/**
+ * Description: 控制名片行为的controller
+ * Created by z on 2017/7/27.
+ */
+//添加跨域请求支持
+@CrossOrigin
+@Controller
+public class CardController {
+
+
+    private static String path = PropertyReader.getUploadPath();
+
+    private CardService cardService;
+    private TokenManager tokenManager;
+    private JedisPool jedisPool;
+
+    @Autowired
+    public void setjedisPool(JedisPool jedisPool) {
+        this.jedisPool = jedisPool;
+    }
+
+    @Autowired
+    public void setCardService(CardService cardService) {
+        this.cardService = cardService;
+    }
+
+    @Autowired
+    public void setTokenManager(TokenManager tokenManager) {
+        this.tokenManager = tokenManager;
+    }
+
+
+    //上传图片和名片信息
+    @RequestMapping(value = "/card",method = RequestMethod.POST)
+    public void addCard(@RequestParam(value = "image", required = false) MultipartFile image,//接收前端的图片文件
+                        @RequestParam(value = "logoImage", required = false) MultipartFile logoImage, //接受前端上传的logo文件
+                        Card card,//接收前端的名片信息
+                        HttpServletResponse response, HttpServletRequest request) throws Exception{
+
+        //获取当前的认证用户的用户名
+        String token = request.getHeader("Access-Token");
+        String username = tokenManager.getUsername(token);
+
+        //设置查询条件
+        card.setUsername(username);
+
+        if(card.getTemplate() == null || (card.getTemplate() != 0 && card.getTemplate() != 1 && card.getTemplate() != 2)){
+            throw new BaseException(HttpStatus.BAD_REQUEST, "名片格式信息错误");
+        }
+
+        //如果有上传图片 则保存图片 并将背景图片文件名写入数据库中
+        if(image != null) {
+            //保存文件扩展名
+            String ex = image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
+            //重新生成UUID文件名
+            String filename = UUID.randomUUID() + ex;
+            //保存文件到上传目录文件
+            image.transferTo(new File(path + "/" + filename));
+            //保存文件名
+            card.setBackground(filename);
+        }
+        //如果上传时没有背景图片 则用默认的背景
+        else {
+            card.setBackground("template.png");
+        }
+
+        if(logoImage != null){
+            //保存文件扩展名
+            String ex = logoImage.getOriginalFilename().substring(logoImage.getOriginalFilename().lastIndexOf("."));
+            //重新生成UUID文件名
+            String filename = UUID.randomUUID() + ex;
+            //保存文件到上传目录文件
+            logoImage.transferTo(new File(path + "/" + filename));
+            //保存文件名
+            card.setLogo(filename);
+
+            //设置默认logoImage位置为(0,0) 左上角
+            if(card.getLogoX() == null){
+                card.setLogoX(0D);
+            }
+            if(card.getLogoY() == null){
+                card.setLogoY(0D);
+            }
+        }
+
+        //创建新的card记录
+        cardService.createRecord(card);
+
+        response.setStatus(HttpStatus.OK.value());
+    }
+
+    //用于删除生成的名片
+    @RequestMapping(value = "/card/{card_id}",method = RequestMethod.DELETE)
+    public void deleteCard(HttpServletRequest request, HttpServletResponse response,
+                           @PathVariable("card_id") Integer card_id) throws Exception{
+
+        //获取当前的认证用户的用户名
+        String token = request.getHeader("Access-Token");
+        String username = tokenManager.getUsername(token);
+
+        //设置查询条件
+        Card card = new Card();
+        //必须设置cardCustom的ID
+        card.setId(card_id);
+        card.setUsername(username);
+
+        Card check = cardService.findCardByIDAndUsername(card);
+        //如果找不到ID的名片信息 就抛出名片不存在异常
+        if(check == null){
+            throw new CardNotFoundException();
+        }
+
+        //删除redis中名片信息
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            if (jedis.exists(("card_" + card_id.toString()).getBytes())) {
+                jedis.del(("card_" + card_id.toString()).getBytes());
+            }
+        }finally {
+            //释放资源
+            if(jedis != null)
+                jedis.close();
+        }
+
+        //如果找到了对应的名片信息 删除名片
+        cardService.deleteCard(check);
+        //删除背景文件
+        if(check.getBackground() != null && !check.getBackground().equals("template.png")){
+            //从check中获取背景图片路径
+            String backgroundPath = path + "/" + check.getBackground();
+            File backgroundFile = new File(backgroundPath);
+            if(backgroundFile.exists()){
+                backgroundFile.delete();
+            }
+        }
+        //删除logo文件
+        if(check.getLogo() != null){
+            String logoPath = path + "/" + check.getLogo();
+            File logoFile = new File(logoPath);
+            if(logoFile.exists()){
+                logoFile.delete();
+            }
+        }
+        response.setStatus(HttpStatus.OK.value());
+    }
+
 //    //用于获得生成的名片
 //    @IgnoreSecurity
 //    @RequestMapping(value = "/card/{card_id}", method = RequestMethod.GET)
@@ -266,40 +265,45 @@
 //            jedis.close();
 //        }
 //    }
-//
-//    //用于修改已生成名片的数据
-//    @RequestMapping(value = "/card/{card_id}", method = RequestMethod.PUT)
-//    public void putCard(HttpServletRequest request, HttpServletResponse response,
-//                        @PathVariable("card_id") Integer card_id,
-//                        @RequestBody CardCustom cardCustom//前端返回的名片信息
-//                        ) throws Exception{
-//
-//        //获取当前的认证用户的用户名
-//        String token = request.getHeader("Access-Token");
-//        String username = tokenManager.getUsername(token);
-//
-//        //设置查询条件
-//        CardQueryVo cardQueryVo = new CardQueryVo();
-//        cardCustom.setId(card_id);
-//        cardCustom.setUsername(username);
-//        cardQueryVo.setCardCustom(cardCustom);
-//
-//        CardCustom check = cardService.findCardByIDAndUsername(cardQueryVo);
-//        //如果找不到ID的名片信息 就抛出名片不存在异常
-//        if(check == null){
-//            throw new CardNotFoundException();
-//        }
-//        //更新名片信息并且存在需要更改信息才更改
-//        if((cardCustom.getEmail() != null && !cardCustom.getEmail().isEmpty()) ||
-//                (cardCustom.getAddress() != null && !cardCustom.getAddress().isEmpty()) ||
-//                (cardCustom.getOccupation() != null && !cardCustom.getOccupation().isEmpty()) ||
-//                (cardCustom.getPhone() != null && !cardCustom.getPhone().isEmpty()) ||
-//                (cardCustom.getName() != null && !cardCustom.getName().equals(""))) {
-//            cardService.updateCardInfo(cardQueryVo);
-//        }
-//
-//        response.setStatus(HttpStatus.OK.value());
-//    }
-//
-//}
-//
+
+    //用于修改已生成名片的数据
+    @RequestMapping(value = "/card/{card_id}", method = RequestMethod.PUT)
+    public void putCard(HttpServletRequest request, HttpServletResponse response,
+                        @PathVariable("card_id") Integer card_id,
+                        @RequestBody Card card//前端返回的名片信息
+                        ) throws Exception{
+
+        //获取当前的认证用户的用户名
+        String token = request.getHeader("Access-Token");
+        String username = tokenManager.getUsername(token);
+
+        //设置查询条件
+        card.setId(card_id);
+        card.setUsername(username);
+
+        Card check = cardService.findCardByIDAndUsername(card);
+        //如果找不到ID的名片信息 就抛出名片不存在异常
+        if(check == null){
+            throw new CardNotFoundException();
+        }
+
+        cardService.updateCardInfo(card);
+
+        //修改信息后 保存在redis中的名片信息应该删除
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            if (jedis.exists(("card_" + card.getId().toString()).getBytes())) {
+                jedis.del(("card_" + card.getId().toString()).getBytes());
+            }
+        }finally {
+            //释放资源
+            if(jedis != null)
+                jedis.close();
+        }
+
+        response.setStatus(HttpStatus.OK.value());
+    }
+
+}
+

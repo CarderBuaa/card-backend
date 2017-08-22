@@ -85,7 +85,6 @@ public class cardMapperTest {
 		List<Card> list = cardMapper.selectByExample(example);
 		System.out.println(list);
 
-
 	}
 
 

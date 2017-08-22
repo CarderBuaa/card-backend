@@ -70,4 +70,14 @@ public class UserMapperTest {
 
 	}
 
+	@Test
+	public void testFindAll() throws Exception{
+		UserMapper userMapper = (UserMapper) applicationContext.getBean("userMapper");
+		UserExample userExample = new UserExample();
+
+		List<User> list = userMapper.selectByExample(userExample);
+
+		System.out.println(list);
+	}
+
 }

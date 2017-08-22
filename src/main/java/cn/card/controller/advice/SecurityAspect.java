@@ -52,6 +52,7 @@ public class SecurityAspect {
         if (!tokenManager.checkToken(token)) {
             throw new TokenException();
         }
+        //TODO:用户访问权限检查
 
         return pjp.proceed();
 

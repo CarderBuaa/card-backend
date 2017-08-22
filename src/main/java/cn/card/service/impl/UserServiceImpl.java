@@ -81,8 +81,8 @@ public class UserServiceImpl implements UserService {
         if(user.getUsername() == null || user.getUsername().equals("")){
             throw new UserNameisNull("用户名不能为空");
         }
-        //防止password被再次更新
-        user.setPassword(null);
+//        //防止password被再次更新
+//        user.setPassword(null);
         userMapper.updateByPrimaryKeySelective(user);
 	}
 
@@ -107,6 +107,14 @@ public class UserServiceImpl implements UserService {
         }
         //list长度不为0
 		return list.get(0);
+	}
+
+	@Override
+	public List<User> findAllUser() throws Exception {
+
+		UserExample example = new UserExample();
+
+		return userMapper.selectByExample(example);
 	}
 
 

@@ -44,7 +44,7 @@ public class TokenManagerImpl implements TokenManager{
 
     @Override
     public boolean checkToken(String token) {
-        //未授权
+
         boolean check = false;
         Jedis jedis = null;
         try{

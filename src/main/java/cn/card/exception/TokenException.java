@@ -17,7 +17,7 @@ public class TokenException extends BaseException{
 	 */
 
 	private static HttpStatus status = HttpStatus.UNAUTHORIZED;
-	private static String message = "当前用户未授权或登录已超时";
+	private static String message = "当前用户未授权,请登录";
 
 	public TokenException() {
 		super(status, message);

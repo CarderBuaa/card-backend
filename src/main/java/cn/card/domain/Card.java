@@ -180,28 +180,4 @@ public class Card {
     public void setFaxWork(Boolean faxWork) {
         this.faxWork = faxWork;
     }
-
-    @Override
-    public String toString() {
-        return "Card{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", template=" + template +
-                ", background='" + background + '\'' +
-                ", logo='" + logo + '\'' +
-                ", logoX=" + logoX +
-                ", logoY=" + logoY +
-                ", name=" + name +
-                ", occupation=" + occupation +
-                ", email=" + email +
-                ", url=" + url +
-                ", phoneWork=" + phoneWork +
-                ", phoneMobile=" + phoneMobile +
-                ", phoneHome=" + phoneHome +
-                ", addressWork=" + addressWork +
-                ", addressHome=" + addressHome +
-                ", faxHome=" + faxHome +
-                ", faxWork=" + faxWork +
-                '}';
-    }
 }

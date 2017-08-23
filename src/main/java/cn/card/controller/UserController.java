@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import cn.card.domain.*;
 import cn.card.exception.*;
+import cn.card.exception.baseException.BaseException;
 import cn.card.service.CardService;
 import cn.card.utils.IgnoreSecurity.IgnoreSecurity;
 import cn.card.utils.access_token.TokenManager;
@@ -13,6 +14,9 @@ import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import cn.card.service.UserService;
@@ -32,7 +36,6 @@ import java.util.List;
 @CrossOrigin
 @Controller
 public class UserController {
-
 
 	private UserService userService;
 	private TokenManager tokenManager;
@@ -56,8 +59,14 @@ public class UserController {
 	//注册方法不需要检查token
 	@IgnoreSecurity
 	@RequestMapping(value="/user",method=RequestMethod.POST)
-	public void createUserController(User user,
+	public void createUserController(@Validated User user, BindingResult result,
 									 HttpServletResponse response) throws Exception{
+
+    	//输出校验错误信息
+    	if(result.hasErrors()){
+    		List<ObjectError> allErrors = result.getAllErrors();
+    		throw new BaseException(HttpStatus.BAD_REQUEST, allErrors.get(0).getDefaultMessage());
+		}
 		//寻找用户名
 		User check = userService.findUserByUserName(user);
 		//用户名已存在
@@ -79,11 +88,17 @@ public class UserController {
 
 	@RequestMapping(value="/user/{username}",method= RequestMethod.PUT)
 	public void editUserController(@PathVariable("username") String username,
-								   @RequestBody User user,
+								   @RequestBody @Validated User user, BindingResult result,
 								   HttpServletRequest request,
 								   HttpServletResponse response) throws Exception {
 		//对中文路径编码问题的处理
 		username = new String(username.getBytes("ISO-8859-1"), "utf8");
+
+		//输出校验错误信息
+		if(result.hasErrors()){
+			List<ObjectError> allErrors = result.getAllErrors();
+			throw new BaseException(HttpStatus.BAD_REQUEST, allErrors.get(0).getDefaultMessage());
+		}
 
 		//获取token的username
 		String token = request.getHeader("Access-Token");
@@ -91,7 +106,7 @@ public class UserController {
 
 		//判断与当前请求username是否相同
 		if(!username_token.equals(username)){
-			throw new TokenException();
+			throw new BaseException(HttpStatus.FORBIDDEN, "当前用户未授权");
 		}
 
 		//新建查询对象
@@ -102,6 +117,12 @@ public class UserController {
 		//用户不存在
 		if (check == null) {
 			throw new UserNotFoundException();
+		}
+
+		//如果当前用户不是管理员 不让其更改自己的角色
+		if(check.getRole() != 1){
+			//让其role一直保持普通用户
+			user.setRole(0);
 		}
 
         userService.updateUserInfo(user);
@@ -121,7 +142,7 @@ public class UserController {
 
 		//判断与当前请求username是否相同
 		if(!username_token.equals(username)){
-			throw new TokenException();
+			throw new BaseException(HttpStatus.FORBIDDEN, "当前用户未授权");
 		}
 
 		//新建查询对象

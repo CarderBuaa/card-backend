@@ -9,7 +9,7 @@ import cn.card.exception.PhoneException;
 import cn.card.exception.UserNameisNull;
 import cn.card.exception.baseException.BaseException;
 import cn.card.utils.GenerateMD5.MD5;
-import cn.card.utils.checkEmail.CheckEmail;
+import cn.card.utils.checkEmail.Check;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import cn.card.service.UserService;
@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
         	throw new PhoneException();
 		}
 		//邮箱格式不正确
-		if(!CheckEmail.checkEmail(user.getEmail())){
+		if(!Check.checkEmail(user.getEmail())){
         	throw new BaseException(HttpStatus.BAD_REQUEST, "邮箱格式错误");
 		}
         //生成MD5密码
@@ -78,11 +78,14 @@ public class UserServiceImpl implements UserService {
 	public void updateUserInfo(User user) throws Exception {
 	    //一定要传入username信息
 	    //信息为空则不更新mapper.xml实现
-        if(user.getUsername() == null || user.getUsername().equals("")){
-            throw new UserNameisNull("用户名不能为空");
-        }
-//        //防止password被再次更新
-//        user.setPassword(null);
+		//邮箱格式不正确
+		if(user.getEmail() != null && !Check.checkEmail(user.getEmail())){
+			throw new BaseException(HttpStatus.BAD_REQUEST, "邮箱格式错误");
+		}
+		//url格式不正确
+		if(user.getUrl() != null && !Check.checkUrl(user.getUrl())){
+			throw new BaseException(HttpStatus.BAD_REQUEST, "url格式错误");
+		}
         userMapper.updateByPrimaryKeySelective(user);
 	}
 
@@ -117,5 +120,23 @@ public class UserServiceImpl implements UserService {
 		return userMapper.selectByExample(example);
 	}
 
+	@Transactional(propagation = Propagation.REQUIRED)
+	@Override
+	public void createNewAdmin(User user) throws Exception {
+		//用户名、密码均为非空选项
+		if((user.getUsername() == null || user.getUsername().equals("")) ||
+				(user.getPassword() == null || user.getPassword().equals(""))){
+			throw new UserNameisNull("用户名、密码不能为空");
+		}
+		//用户名长度不能超过30
+		if(user.getUsername().length() > 30){
+			throw new IllegalUsernameException();
+		}
+		//生成MD5密码
+		user.setPassword(MD5.getMD5(user.getPassword()));
+		//设置管理员身份
+		user.setRole(1);
+		userMapper.insertSelective(user);
+	}
 
 }

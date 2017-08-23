@@ -15,6 +15,7 @@
     <result column="address_home" jdbcType="VARCHAR" property="addressHome" />
     <result column="fax_home" jdbcType="BIGINT" property="faxHome" />
     <result column="fax_work" jdbcType="BIGINT" property="faxWork" />
+    <result column="role" jdbcType="INTEGER" property="role" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -76,7 +77,7 @@
   </sql>
   <sql id="Base_Column_List">
     username, password, name, occupation, email, url, phone_work, phone_mobile, phone_home, 
-    address_work, address_home, fax_home, fax_work
+    address_work, address_home, fax_home, fax_work, role
   </sql>
   <select id="selectByExample" parameterType="cn.card.domain.UserExample" resultMap="BaseResultMap">
     select
@@ -113,12 +114,12 @@
       occupation, email, url, 
       phone_work, phone_mobile, phone_home, 
       address_work, address_home, fax_home, 
-      fax_work)
+      fax_work, role)
     values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
       #{occupation,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, 
       #{phoneWork,jdbcType=BIGINT}, #{phoneMobile,jdbcType=BIGINT}, #{phoneHome,jdbcType=BIGINT}, 
       #{addressWork,jdbcType=VARCHAR}, #{addressHome,jdbcType=VARCHAR}, #{faxHome,jdbcType=BIGINT}, 
-      #{faxWork,jdbcType=BIGINT})
+      #{faxWork,jdbcType=BIGINT}, #{role,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="cn.card.domain.User">
     insert into user
@@ -162,6 +163,9 @@
       <if test="faxWork != null">
         fax_work,
       </if>
+      <if test="role != null">
+        role,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="username != null">
@@ -202,6 +206,9 @@
       </if>
       <if test="faxWork != null">
         #{faxWork,jdbcType=BIGINT},
+      </if>
+      <if test="role != null">
+        #{role,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -253,6 +260,9 @@
       <if test="record.faxWork != null">
         fax_work = #{record.faxWork,jdbcType=BIGINT},
       </if>
+      <if test="record.role != null">
+        role = #{record.role,jdbcType=INTEGER},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -272,7 +282,8 @@
       address_work = #{record.addressWork,jdbcType=VARCHAR},
       address_home = #{record.addressHome,jdbcType=VARCHAR},
       fax_home = #{record.faxHome,jdbcType=BIGINT},
-      fax_work = #{record.faxWork,jdbcType=BIGINT}
+      fax_work = #{record.faxWork,jdbcType=BIGINT},
+      role = #{record.role,jdbcType=INTEGER}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -316,6 +327,9 @@
       <if test="faxWork != null">
         fax_work = #{faxWork,jdbcType=BIGINT},
       </if>
+      <if test="role != null">
+        role = #{role,jdbcType=INTEGER},
+      </if>
     </set>
     where username = #{username,jdbcType=VARCHAR}
   </update>
@@ -332,7 +346,8 @@
       address_work = #{addressWork,jdbcType=VARCHAR},
       address_home = #{addressHome,jdbcType=VARCHAR},
       fax_home = #{faxHome,jdbcType=BIGINT},
-      fax_work = #{faxWork,jdbcType=BIGINT}
+      fax_work = #{faxWork,jdbcType=BIGINT},
+      role = #{role,jdbcType=INTEGER}
     where username = #{username,jdbcType=VARCHAR}
   </update>
 </mapper>

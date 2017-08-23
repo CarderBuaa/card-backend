@@ -49,10 +49,10 @@ public class SecurityAspect {
         String token = request.getHeader(tokenName);
 
         //如果访问对象的令牌不对，则报错
-        if (!tokenManager.checkToken(token)) {
+        if (token == null || !tokenManager.checkToken(token)) {
             throw new TokenException();
         }
-        //TODO:用户访问权限检查
+
 
         return pjp.proceed();
 

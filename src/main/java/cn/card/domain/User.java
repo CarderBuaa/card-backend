@@ -27,6 +27,8 @@ public class User {
 
     private Long faxWork;
 
+    private Integer role;
+
     public String getUsername() {
         return username;
     }
@@ -131,22 +133,11 @@ public class User {
         this.faxWork = faxWork;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", name='" + name + '\'' +
-                ", occupation='" + occupation + '\'' +
-                ", email='" + email + '\'' +
-                ", url='" + url + '\'' +
-                ", phoneWork=" + phoneWork +
-                ", phoneMobile=" + phoneMobile +
-                ", phoneHome=" + phoneHome +
-                ", addressWork='" + addressWork + '\'' +
-                ", addressHome='" + addressHome + '\'' +
-                ", faxHome=" + faxHome +
-                ", faxWork=" + faxWork +
-                '}';
+    public Integer getRole() {
+        return role;
+    }
+
+    public void setRole(Integer role) {
+        this.role = role;
     }
 }

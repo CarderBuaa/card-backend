@@ -46,6 +46,8 @@ public class UserCustom extends User{
         this.setFaxHome(user.getFaxHome());
 
         this.setFaxWork(user.getFaxWork());
+
+        this.setRole(user.getRole());
     }
 
     @Override

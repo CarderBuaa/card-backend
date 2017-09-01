@@ -1,4 +1,4 @@
-package cn.card.utils.checkEmail;
+package cn.card.utils.check;
 
 /**
  * Description:

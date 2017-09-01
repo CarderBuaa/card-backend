@@ -11,19 +11,26 @@
     
 	<!-- 加载数据库连接文件 -->
 	<context:property-placeholder location="classpath:db.properties"/>
-	<!-- 数据源使用c3p0连接池 -->
-	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-		<property name="driverClass" value="${jdbc.driver}"/>
-		<property name="jdbcUrl" value="${jdbc.url}"/>
-		<property name="user" value="${jdbc.username}"/>
+	<!-- 数据源使用druid连接池 -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driver}"/>
+		<property name="Url" value="${jdbc.url}"/>
+		<property name="username" value="${jdbc.username}"/>
 		<property name="password" value="${jdbc.password}"/>
-		<property name="initialPoolSize" value="${c3p0.initialPoolSize}" />
-        <property name="minPoolSize" value="${c3p0.minPoolSize}" />
-        <property name="maxPoolSize" value="${c3p0.maxPoolSize}" />
-        <property name="acquireIncrement" value="${c3p0.acquireIncrement}" />
-        <property name="maxIdleTime" value="${c3p0.maxIdleTime}" />
-		<property name="idleConnectionTestPeriod" value="${c3p0.idleConnectionTestPeriod}"/>
-
+		<!-- 配置初始化大小、最小、最大 -->
+		<property name="initialSize" value="${druid.initialSize}"/>
+		<property name="minIdle" value="${druid.minIdle}"/>
+		<property name="maxActive" value="${druid.maxActive}"/>
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="${druid.maxWait}"/>
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="${druid.timeBetweenEvictionRunsMillis}"/>
+		<!-- 连接泄漏处理。Druid提供了RemoveAbandanded相关配置，用来关闭长时间不使用的连接（例如忘记关闭连接）。 -->
+		<property name="removeAbandoned" value="true"/>
+		<!-- 1800秒，也就是30分钟 -->
+		<property name="removeAbandonedTimeout" value="1800"/>
+		<!-- 防止sql注入 -->
+		<property name="filters" value="wall"/>
 	</bean>
 	
 	<!-- 配置sqlSessionFactory -->

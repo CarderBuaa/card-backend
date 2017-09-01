@@ -40,7 +40,7 @@ public class ManageController {
         this.userService = userService;
     }
 
-    @RequestMapping(value = "/allUserInfo", method = RequestMethod.GET)
+    @RequestMapping(value = "/manage/allUserInfo", method = RequestMethod.GET)
     public @ResponseBody List<User> getAllUserInfo(HttpServletRequest request) throws Exception{
         //获取token的username
         String token = request.getHeader("Access-Token");
@@ -56,8 +56,8 @@ public class ManageController {
         }
 
         //如果当前用户不是管理员
-        if(check.getRole() != 1){
-            throw new BaseException(HttpStatus.FORBIDDEN, "当前用户无权限访问该页面");
+        if(check.getRole() == null || check.getRole() != 1){
+            throw new BaseException(HttpStatus.UNAUTHORIZED, "当前用户无权限访问该页面");
         }
 
         return userService.findAllUser();

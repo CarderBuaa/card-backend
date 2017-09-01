@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import cn.card.utils.propertyReader.PropertyReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -122,9 +123,58 @@ public class CardController {
                 card.setLogoY(0D);
             }
         }
+        //card的name始终为true
+        card.setName(true);
+
+        //查找user对象
+        User userFind = new User();
+        userFind.setUsername(username);
+
+        User user = userService.findUserByUserName(userFind);
+
+        //获取背景图片路径
+        String backgroundPath = path + "/" + card.getBackground();
+
+        //判断背景图片是否存在
+        File back = new File(backgroundPath);
+        //如果背景图片不存在 则抛出异常
+        if (!back.exists()) {
+            throw new BackgroundImageNotFound();
+        }
+
+        //尝试生成名片
+        BufferedImage background = ImageIO.read(new FileInputStream(back));
+        //在内存中生成名片
+        BufferedImage cardImage = GenerateQRcode.createImage(user, card, background);
+
+        cardImage.flush();
 
         //创建新的card记录
         cardService.createRecord(card);
+
+        Integer card_id = card.getId();
+        //如果能够生成名片 将其放入redis中
+        Jedis jedis = null;
+        try{
+            jedis = jedisPool.getResource();
+
+            //将内存的名片转化成字节流
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ImageIO.write(cardImage, "png", out);
+            //获取字节流
+            byte[] result = out.toByteArray();
+
+            //将字节数组放入redis中
+            jedis.set(("card_" + card_id.toString()).getBytes(), result);
+            //设置图片的超时时间为一天
+            jedis.expire(("card_" + card_id.toString()).getBytes(), 86400);
+
+        }finally {
+            if(jedis != null){
+                jedis.close();
+            }
+            cardImage.flush();
+        }
 
         response.setStatus(HttpStatus.OK.value());
     }
@@ -306,6 +356,7 @@ public class CardController {
 
         response.setStatus(HttpStatus.OK.value());
     }
+
 
 }
 

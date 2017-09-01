@@ -13,6 +13,7 @@ import cn.card.utils.propertyReader.PropertyReader;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -20,6 +21,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import cn.card.service.UserService;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.io.File;
@@ -40,8 +43,14 @@ public class UserController {
 	private UserService userService;
 	private TokenManager tokenManager;
 	private CardService cardService;
+	private JedisPool jedisPool;
 
-    @Autowired
+	@Autowired
+	public void setJedisPool(JedisPool jedisPool) {
+		this.jedisPool = jedisPool;
+	}
+
+	@Autowired
 	public void setUserService(UserService userService) {
 		this.userService = userService;
 	}
@@ -104,14 +113,21 @@ public class UserController {
 		String token = request.getHeader("Access-Token");
 		String username_token = tokenManager.getUsername(token);
 
-		//判断与当前请求username是否相同
-		if(!username_token.equals(username)){
-			throw new BaseException(HttpStatus.FORBIDDEN, "当前用户未授权");
+		User find = new User();
+		find.setUsername(username_token);
+		User admin = userService.findUserByUserName(find);
+
+		//当前用户不是管理员
+		if(admin == null || admin.getRole() != 1) {
+			user.setRole(0);
+			//判断与当前请求username是否相同
+			if (!username_token.equals(username)) {
+				throw new BaseException(HttpStatus.UNAUTHORIZED, "当前用户未授权");
+			}
 		}
 
 		//新建查询对象
 		user.setUsername(username);
-
 		//寻找用户
 		User check = userService.findUserByUserName(user);
 		//用户不存在
@@ -119,13 +135,28 @@ public class UserController {
 			throw new UserNotFoundException();
 		}
 
-		//如果当前用户不是管理员 不让其更改自己的角色
-		if(check.getRole() != 1){
-			//让其role一直保持普通用户
-			user.setRole(0);
-		}
-
         userService.updateUserInfo(user);
+		//更新完用户信息后 删除redis中图片信息 重新生成
+		Jedis jedis = null;
+		try{
+			jedis = jedisPool.getResource();
+			//找到所有card
+			Card card = new Card();
+			card.setUsername(username);
+
+			//根据username查询当前用户所有的card信息
+			List<Card> cardCustomList = cardService.findRecordList(card);
+			for (Card card1: cardCustomList){
+				Integer card_id = card1.getId();
+				if (jedis.exists(("card_" + card_id.toString()).getBytes())) {
+					jedis.del(("card_" + card_id.toString()).getBytes());
+				}
+			}
+		}finally {
+			if(jedis != null){
+				jedis.close();
+			}
+		}
 		response.setStatus(HttpStatus.OK.value());
 	}
 
@@ -142,7 +173,7 @@ public class UserController {
 
 		//判断与当前请求username是否相同
 		if(!username_token.equals(username)){
-			throw new BaseException(HttpStatus.FORBIDDEN, "当前用户未授权");
+			throw new BaseException(HttpStatus.UNAUTHORIZED, "当前用户未授权");
 		}
 
 		//新建查询对象
@@ -185,12 +216,13 @@ public class UserController {
 
 		User check = userService.findUserByUsernameAndPassword(user);
 
-		//获取当前用户生成的token
+		//获取当前用户生成的token,role
 		String token = tokenManager.createToken(check.getUsername());
 
 		//将token变成JSON放入response中
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("token", token);
+
 		response.setCharacterEncoding("UTF-8");
 		response.setContentType("application/json; charset=utf-8");
 		try {
@@ -198,6 +230,23 @@ public class UserController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
+
+	//针对绑定异常的处理
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public void handleJsonException(HttpServletResponse response){
+
+		//填充message字符串到response的JSON中
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("message", "号码长度不能超过11位");
+		response.setCharacterEncoding("UTF-8");
+		response.setContentType("application/json; charset=utf-8");
+		try {
+			response.getWriter().append(jsonObj.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

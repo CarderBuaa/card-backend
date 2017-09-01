@@ -151,7 +151,7 @@ public class GenerateQRcode {
        //写入内容生成二维码图片
        String content = "BEGIN:VCARD\n" +
                "VERSION:3.0\n" ;
-       Integer height = 150;
+       Integer height = 210;
 
        //名字
        if(card.getName() != null && card.getName()) {
@@ -159,7 +159,7 @@ public class GenerateQRcode {
                content += "N:" + user.getName() + "\n";
 
                Font font = new Font("YouYuan", Font.PLAIN, 50);
-               paint(font,graphics, user.getName(),x, 100);
+               paint(font,graphics, user.getName(),x, 160);
            }
        }
        //职位
@@ -258,14 +258,24 @@ public class GenerateQRcode {
                content += "URL:" + user.getUrl() + "\n";
                // 1 在名片上显示url字符串
                if(card.getUrl() == 1){
-                   Font font = new Font("黑体", Font.PLAIN, 20);
-                   if(card.getTemplate() == 2){
-                       int tempX = 5 ;
-                       height = newLine("",user.getUrl(), graphics, font, tempX, 450, 30, graphics2D, 1);
+                   Font font = new Font("黑体", Font.PLAIN, 15);
+                   if(card.getTemplate() == 0){
+                       FontMetrics fm = sun.font.FontDesignMetrics.getMetrics(font);
+                       //获取url宽度
+                       int stringWidth = fm.stringWidth(user.getUrl());
+                       if(stringWidth > width_static){
+                           throw new BaseException(HttpStatus.BAD_REQUEST, "url长度过长，无法生成");
+                       }
+                       paintUrl(font, graphics2D, graphics, user.getUrl(), width_static - stringWidth - 5, stringWidth);
                    }
                    else{
-                       int tempX = qrcodeX - 50 <= 0? 5: qrcodeX-50;
-                       height = newLine("",user.getUrl(), graphics, font, tempX, 450, 30, graphics2D, 1);
+                       FontMetrics fm = sun.font.FontDesignMetrics.getMetrics(font);
+                       //获取url宽度
+                       int stringWidth = fm.stringWidth(user.getUrl());
+                       if(stringWidth > width_static){
+                           throw new BaseException(HttpStatus.BAD_REQUEST, "url长度过长，无法生成");
+                       }
+                       paintUrl(font, graphics2D, graphics, user.getUrl(), 5, stringWidth);
                    }
                }
                // 2 在名片上显示url二维码
@@ -274,16 +284,16 @@ public class GenerateQRcode {
                    urlImage = zoomInImage(urlImage, 115, 115);
 
                    if(card.getTemplate() == 2){
-                       graphics2D.drawImage(urlImage, 40 , 310 ,
+                       graphics2D.drawImage(urlImage, 40 , 330 ,
                                urlImage.getWidth(), urlImage.getHeight(), null);
                        Font font = new Font("黑体", Font.PLAIN, 15);
-                       paint1(font, graphics, "主页码", 70, urlImage.getHeight() + 330);
+                       paint1(font, graphics, "主页码", 70, urlImage.getHeight() + 345, Color.BLACK);
                    }
                    else{
-                       graphics2D.drawImage(urlImage, qrcodeX + 50 , 300 ,
+                       graphics2D.drawImage(urlImage, qrcodeX + 40 , 330 ,
                                urlImage.getWidth(), urlImage.getHeight(), null);
                        Font font = new Font("黑体", Font.PLAIN, 15);
-                       paint1(font, graphics, "主页码", qrcodeX + 85, urlImage.getHeight() + 320);
+                       paint1(font, graphics, "主页码", qrcodeX + 75, urlImage.getHeight() + 345, Color.BLACK);
                    }
 
                }
@@ -294,16 +304,16 @@ public class GenerateQRcode {
 
        BufferedImage qrcode = createQrcode(content, 'L', 15);
 
-       qrcode = zoomInImage(qrcode, 199, 199);
+       qrcode = zoomInImage(qrcode, 175, 175);
 
        //将生成的二维码绘制在背景图片上
-       graphics2D.drawImage(qrcode, qrcodeX, 50,
+       graphics2D.drawImage(qrcode, qrcodeX, 120,
                qrcode.getWidth(),
                qrcode.getHeight(),
                null);
 
        Font font = new Font("黑体", Font.PLAIN, 15);
-       paint1(font, graphics, "名片二维码", qrcodeX + 50, 70 + qrcode.getHeight());
+       paint1(font, graphics, "名片二维码", qrcodeX + 50, 135 + qrcode.getHeight(), Color.BLACK);
 
        //绘制logo
        if(card.getLogo() != null) {
@@ -358,9 +368,9 @@ public class GenerateQRcode {
                 graphics2D.fillRect(x - 5, y-font.getSize(), fm.stringWidth(list.get(0)), 30);
                 graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
             }
-            paint1(font, graphics, name  + list.get(0), x, y);
+            paint1(font, graphics, name  + list.get(0), x, y, Color.BLACK);
             y += 20;
-            for(int i = 1 ; i < list.size() - 1; i ++){
+            for(int i = 1 ; i < list.size(); i ++){
                 if(control == 1) {
                     //设置透明背景 提高文字的辨识度
                     graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.3f));
@@ -369,7 +379,7 @@ public class GenerateQRcode {
                     graphics2D.fillRect(x + (name.length()-1) * font.getSize() + 5, y-font.getSize(), fm.stringWidth(list.get(i)), 30);
                     graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
                 }
-                paint1(font, graphics, list.get(i), x + (name.length()-1) * font.getSize() + 10, y);
+                paint1(font, graphics, list.get(i), x + (name.length()-1) * font.getSize() + 10, y, Color.BLACK);
                 y += 20;
             }
         }
@@ -382,7 +392,7 @@ public class GenerateQRcode {
                 graphics2D.fillRect(x - 5, y-font.getSize(), fm.stringWidth(name + content) + 10, 30);
                 graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
             }
-            paint1(font, graphics, name  + content, x, y);
+            paint1(font, graphics, name  + content, x, y, Color.BLACK);
             y += 30;
         }
 
@@ -452,10 +462,9 @@ public class GenerateQRcode {
 
 
    //绘制string方法1
-   public static void paint1(Font f, Graphics g, String content, int x, int y){
+   public static void paint1(Font f, Graphics g, String content, int x, int y, Color color){
        GlyphVector v = f.createGlyphVector(g.getFontMetrics(f).getFontRenderContext(), content);
        Shape shape = v.getOutline();
-
 
        Graphics2D gg = (Graphics2D) g;
        //移动graphics2D原点到x,y
@@ -463,11 +472,21 @@ public class GenerateQRcode {
        // 设置“抗锯齿”的属性
        gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
        gg.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_DEFAULT);
-       gg.setColor(Color.black);
+       gg.setColor(color);
        gg.fill(shape);
        //将graphics2D原点重置
        gg.translate(-x,-y);
    }
+
+   //绘制url方法
+    private static void paintUrl(Font font, Graphics2D graphics2D, Graphics graphics, String content, int x, int stringWidth){
+        graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.3f));
+        graphics2D.setColor(Color.blue.brighter());
+        graphics2D.setStroke(new BasicStroke(1f));
+        graphics2D.fillRect(x-5, 450-font.getSize(), stringWidth + 10, 20);
+        graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+        paint1(font, graphics, content, x, 450, Color.WHITE);
+    }
 
 
     @Test
@@ -482,28 +501,25 @@ public class GenerateQRcode {
        user.setPhoneWork(5L);
        user.setPhoneMobile(6L);
        user.setPhoneHome(7L);
-       user.setAddressWork("小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小");
+       user.setAddressWork("小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小");
        user.setAddressHome("9");
        user.setFaxHome(62100001L);
        user.setFaxWork(800L);
 
-       card.setLogo("2.jpg");
-       card.setLogoY(1.0);
-       card.setLogoX(1.0);
         card.setName(true);
         card.setOccupation(true);
         card.setEmail(true);
         card.setPhoneHome(true);
         card.setAddressWork(true);
         card.setPhoneWork(true);
-        card.setPhoneMobile(true);
-        card.setAddressHome(true);
-        card.setFaxHome(true);
+        card.setPhoneMobile(false);
+        card.setAddressHome(false);
+        card.setFaxHome(false);
         card.setFaxWork(true);
         card.setUrl(2);
-        card.setTemplate(0);
+        card.setTemplate(2);
 
-        InputStream imagein = new FileInputStream("E:/uploads/2.jpg");
+        InputStream imagein = new FileInputStream("E:/uploads/template.png");
         BufferedImage background = ImageIO.read(imagein);
 
         BufferedImage image = createImage(user,card, background);

@@ -46,9 +46,9 @@ public class ExceptionHandler implements HandlerExceptionResolver{
             }
         }
         //不是系统自定义异常，返回位置错误
-        else{
+        else {
             message = "未知错误";
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 
             //填充message字符串到response的JSON中
             JSONObject jsonObj = new JSONObject();

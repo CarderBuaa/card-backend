@@ -9,7 +9,7 @@ import cn.card.exception.PhoneException;
 import cn.card.exception.UserNameisNull;
 import cn.card.exception.baseException.BaseException;
 import cn.card.utils.GenerateMD5.MD5;
-import cn.card.utils.checkEmail.Check;
+import cn.card.utils.check.Check;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import cn.card.service.UserService;
@@ -78,13 +78,19 @@ public class UserServiceImpl implements UserService {
 	public void updateUserInfo(User user) throws Exception {
 	    //一定要传入username信息
 	    //信息为空则不更新mapper.xml实现
+
 		//邮箱格式不正确
-		if(user.getEmail() != null && !Check.checkEmail(user.getEmail())){
+		if(user.getEmail() != null && !user.getEmail().equals("") && !Check.checkEmail(user.getEmail()) ){
 			throw new BaseException(HttpStatus.BAD_REQUEST, "邮箱格式错误");
 		}
 		//url格式不正确
-		if(user.getUrl() != null && !Check.checkUrl(user.getUrl())){
+		if(user.getUrl() != null && !user.getUrl().equals("") && !Check.checkUrl(user.getUrl())){
 			throw new BaseException(HttpStatus.BAD_REQUEST, "url格式错误");
+		}
+
+		//用户更改密码
+		if(user.getPassword() != null){
+			user.setPassword(MD5.getMD5(user.getPassword()));
 		}
         userMapper.updateByPrimaryKeySelective(user);
 	}

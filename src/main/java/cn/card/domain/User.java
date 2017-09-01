@@ -1,5 +1,9 @@
 package cn.card.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.validation.constraints.Digits;
+
 public class User {
     private String username;
 
@@ -13,10 +17,14 @@ public class User {
 
     private String url;
 
+    //检查位数
+    @Digits(integer = 11, fraction = 0,message = "{user.phoneLength}")
     private Long phoneWork;
 
+    @Digits(integer = 11, fraction = 0,message = "{user.phoneLength}")
     private Long phoneMobile;
 
+    @Digits(integer = 11, fraction = 0,message = "{user.phoneLength}")
     private Long phoneHome;
 
     private String addressWork;

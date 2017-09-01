@@ -35,8 +35,5 @@ public class InitData {
         if(check == null) {
             userService.createNewAdmin(admin);
         }
-        else {
-            userService.updateUserInfo(admin);
-        }
     }
 }

@@ -294,16 +294,16 @@
       <if test="password != null and password != ''">
         password = #{password,jdbcType=VARCHAR},
       </if>
-      <if test="name != null and name != ''">
+      <if test="name != null">
         name = #{name,jdbcType=VARCHAR},
       </if>
-      <if test="occupation != null and occupation != ''">
+      <if test="occupation != null">
         occupation = #{occupation,jdbcType=VARCHAR},
       </if>
-      <if test="email != null and email != ''">
+      <if test="email != null">
         email = #{email,jdbcType=VARCHAR},
       </if>
-      <if test="url != null and url != ''">
+      <if test="url != null">
         url = #{url,jdbcType=VARCHAR},
       </if>
       <if test="phoneWork != null">
@@ -315,10 +315,10 @@
       <if test="phoneHome != null">
         phone_home = #{phoneHome,jdbcType=BIGINT},
       </if>
-      <if test="addressWork != null and addressWork != null">
+      <if test="addressWork != null">
         address_work = #{addressWork,jdbcType=VARCHAR},
       </if>
-      <if test="addressHome != null and addressHome != null">
+      <if test="addressHome != null">
         address_home = #{addressHome,jdbcType=VARCHAR},
       </if>
       <if test="faxHome != null">

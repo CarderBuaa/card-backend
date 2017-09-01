@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
  * @author z
  * @date 2017年7月26日
  */
-public class BaseException extends Exception{
+public class BaseException extends RuntimeException{
 
 	/**
 	 * 

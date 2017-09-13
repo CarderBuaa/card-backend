@@ -71,7 +71,7 @@ public class CardController {
 
 
     //上传图片和名片信息
-    @RequestMapping(value = "/card",method = RequestMethod.POST)
+    @RequestMapping(value = "/card", method = RequestMethod.POST)
     public void addCard(@RequestParam(value = "image", required = false) MultipartFile image,//接收前端的图片文件
                         @RequestParam(value = "logoImage", required = false) MultipartFile logoImage, //接受前端上传的logo文件
                         Card card,//接收前端的名片信息
@@ -161,7 +161,6 @@ public class CardController {
             byte[] result = out.toByteArray();
             //将字节数组放入redis中
             jedis.set(("card_" + card_id.toString()).getBytes(), result);
-            jedis.expire(("card_" + card_id.toString()).getBytes(), 86400);
         }
         //释放资源
         finally {
@@ -176,12 +175,12 @@ public class CardController {
 
 
     //用于修改已生成名片的数据
-    @RequestMapping(value = "/card/{card_id}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/card/{card_id}", method = RequestMethod.POST)
     public void putCard(HttpServletRequest request, HttpServletResponse response,
+                        Card card, //前端返回的名片信息
                         @PathVariable("card_id") Integer card_id,
                         @RequestParam(value = "image", required = false) MultipartFile image,//接收前端的图片文件
-                        @RequestParam(value = "logoImage", required = false) MultipartFile logoImage, //接受前端上传的logo文件
-                        Card card//前端返回的名片信息
+                        @RequestParam(value = "logoImage", required = false) MultipartFile logoImage//接受前端上传的logo文件
                         ) throws Exception{
 
         //名片格式信息不对
@@ -255,29 +254,58 @@ public class CardController {
             }
         }
 
+        //查找user对象
+        User userFind = new User();
+        userFind.setUsername(username);
+
+        User user = userService.findUserByUserName(userFind);
+
+        //获取背景图片路径
+        String backgroundPath = path + "/" + card.getBackground();
+
+        //判断背景图片是否存在
+        File back = new File(backgroundPath);
+        //如果背景图片不存在 则抛出异常
+        if (!back.exists()) {
+            throw new BackgroundImageNotFound();
+        }
+
+        //读取图片
+        BufferedImage background =ImageIO.read(new FileInputStream(back));
+        //生成图片
+        BufferedImage cardImage = GenerateQRcode.createImage(user, card, background);
+        //更新用户信息
         cardService.updateCardInfo(card);
 
-        //修改信息后 保存在redis中的名片信息应该删除
         Jedis jedis = null;
+        //修改信息后 保存在redis中的名片信息应该删除 同时将新的图片信息保存
         try {
             jedis = jedisPool.getResource();
             if (jedis.exists(("card_" + card_id.toString()).getBytes())) {
                 jedis.del(("card_" + card_id.toString()).getBytes());
             }
-        }finally {
-            //释放资源
-            if(jedis != null)
-                jedis.close();
-        }
-        //TODO:put之后 重新尝试生成名片
+            //将内存的名片转化成字节流
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ImageIO.write(cardImage, "png", out);
+            //获取字节流
+            byte[] result = out.toByteArray();
+            //将字节数组放入redis中
+            jedis.set(("card_" + card_id.toString()).getBytes(), result);
 
-        response.setStatus(HttpStatus.OK.value());
+        }
+        //释放资源
+        finally {
+            if(jedis != null){
+                jedis.close();
+            }
+            background.flush();
+            cardImage.flush();
+        }
     }
 
 
-
     //用于删除生成的名片
-    @RequestMapping(value = "/card/{card_id}",method = RequestMethod.DELETE)
+    @RequestMapping(value = "/card/{card_id}", method = RequestMethod.DELETE)
     public void deleteCard(HttpServletRequest request, HttpServletResponse response,
                            @PathVariable("card_id") Integer card_id) throws Exception{
 
@@ -395,7 +423,6 @@ public class CardController {
 
                 //将字节数组放入redis中
                 jedis.set(("card_" + card_id.toString()).getBytes(), result);
-                jedis.expire(("card_" + card_id.toString()).getBytes(), 86400);
 
                 //释放资源
                 cardImage.flush();

@@ -80,7 +80,7 @@ public class SecurityAspect {
         }
         //URI匹配 /user/{username}
         if(URI.contains("/user/")){
-            //管理员可以更改用户信息
+            //管理员可以更改和获取用户信息
             if(user.getRole() != 1) {
                 String usernameURI = URI.substring(URI.lastIndexOf('/'));
                 if (!usernameURI.equals("/" + usernameToken)) {

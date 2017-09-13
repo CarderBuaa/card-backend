@@ -25,4 +25,7 @@ public interface CardService {
 
     //通过ID查找一个名片
     Card findCardByIDAndUsername(Card card) throws Exception;
+
+    //返回所有的名片信息
+    List<Card> findAllCard() throws Exception;
 }

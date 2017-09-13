@@ -36,20 +36,4 @@ public class Check
         return url.matches(regex);
     }
 
-    public static void main(String[] args) throws Exception
-    {
-        String url = "http://www.baidu.com"; // 需要进行验证的
-        while(true)
-        {
-            url = new BufferedReader(new InputStreamReader(System.in)).readLine();
-            if (Check.checkUrl(url))// 验证邮箱
-            {
-                System.out.println(url+"\n是合法的。");
-            }
-            else
-            {
-                System.out.println(url+"\n不是合法的。");
-            }
-        }
-    }
 }

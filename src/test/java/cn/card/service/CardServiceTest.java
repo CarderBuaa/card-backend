@@ -84,5 +84,11 @@ public class CardServiceTest {
 		System.out.println(cardCustom1);
 	}
 
+	@Test
+	public void testFindAllCard() throws Exception{
+		CardService cardService = (CardService) applicationContext.getBean("cardService");
+
+		System.out.println(cardService.findAllCard());
+	}
 
 }

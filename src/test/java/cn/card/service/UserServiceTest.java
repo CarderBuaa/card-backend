@@ -73,4 +73,10 @@ public class UserServiceTest {
 		System.out.print(userService.findUserByUsernameAndPassword(user));
 	}
 
+	@Test
+	public void testfindAllUser() throws Exception {
+		UserService userService = (UserService) applicationContext.getBean("userService");
+		System.out.println(userService.findAllUser());
+
+	}
 }

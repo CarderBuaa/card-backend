@@ -1,6 +1,7 @@
 package cn.card.exception;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,9 +40,21 @@ public class ExceptionHandler implements HandlerExceptionResolver{
             jsonObj.put("message", message);
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json; charset=utf-8");
+            OutputStream stream = null;
             try {
-                response.getWriter().append(jsonObj.toString());
-            } catch (IOException e) {
+                try {
+                    byte[] result = jsonObj.toString().getBytes("UTF-8");
+                    stream = response.getOutputStream();
+                    stream.write(result);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }finally {
+                    if(stream != null){
+                        stream.flush();
+                        stream.close();
+                    }
+                }
+            } catch (Exception e){
                 e.printStackTrace();
             }
         }
@@ -55,9 +68,23 @@ public class ExceptionHandler implements HandlerExceptionResolver{
             jsonObj.put("message", message);
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json; charset=utf-8");
+            OutputStream stream = null;
             try {
-                response.getWriter().append(jsonObj.toString());
-            } catch (IOException e) {
+                try {
+                    //将字节制流写入response中
+                    byte[] result = jsonObj.toString().getBytes("UTF-8");
+                    stream = response.getOutputStream();
+                    stream.write(result);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if (stream != null) {
+                        stream.flush();
+                        stream.close();
+                    }
+                }
+            }catch (Exception e){
                 e.printStackTrace();
             }
         }

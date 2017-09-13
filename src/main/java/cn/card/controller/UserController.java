@@ -27,6 +27,7 @@ import redis.clients.jedis.JedisPool;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -120,10 +121,6 @@ public class UserController {
 		//当前用户不是管理员
 		if(admin == null || admin.getRole() != 1) {
 			user.setRole(0);
-			//判断与当前请求username是否相同
-			if (!username_token.equals(username)) {
-				throw new BaseException(HttpStatus.UNAUTHORIZED, "当前用户未授权");
-			}
 		}
 
 		//新建查询对象
@@ -161,20 +158,11 @@ public class UserController {
 	}
 
 	@RequestMapping(value="/user/{username}",method = RequestMethod.GET)
-	public @ResponseBody UserCustom getUserController(@PathVariable("username") String username,
-                                                HttpServletRequest request) throws Exception {
+	public @ResponseBody UserCustom getUserController(
+										@PathVariable("username") String username) throws Exception {
 
 		//对中文路径编码问题的处理
 		username = new String(username.getBytes("ISO-8859-1"), "utf8");
-
-		//获取token的username
-		String token = request.getHeader("Access-Token");
-		String username_token = tokenManager.getUsername(token);
-
-		//判断与当前请求username是否相同
-		if(!username_token.equals(username)){
-			throw new BaseException(HttpStatus.UNAUTHORIZED, "当前用户未授权");
-		}
 
 		//新建查询对象
 		User user = new User();
@@ -225,27 +213,46 @@ public class UserController {
 
 		response.setCharacterEncoding("UTF-8");
 		response.setContentType("application/json; charset=utf-8");
+
+		OutputStream out = null;
 		try {
-			response.getWriter().append(jsonObj.toString());
+			out = response.getOutputStream();
+			byte[] result = jsonObj.toString().getBytes("UTF-8");
+			out.write(result);
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			if(out != null) {
+				out.flush();
+				out.close();
+			}
 		}
 	}
 
 	//针对绑定异常的处理
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(HttpMessageNotReadableException.class)
-	public void handleJsonException(HttpServletResponse response){
+	public void handleJsonException(HttpServletResponse response) throws Exception{
 
 		//填充message字符串到response的JSON中
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("message", "号码长度不能超过11位");
 		response.setCharacterEncoding("UTF-8");
 		response.setContentType("application/json; charset=utf-8");
+
+		OutputStream stream = null;
+		//将字节制流写入response中
 		try {
-			response.getWriter().append(jsonObj.toString());
-		} catch (IOException e) {
+			stream = response.getOutputStream();
+			byte[] result = jsonObj.toString().getBytes("UTF-8");
+			stream.write(result);
+		}catch (Exception e){
 			e.printStackTrace();
+		}finally {
+			if(stream != null) {
+				stream.flush();
+				stream.close();
+			}
 		}
 	}
 

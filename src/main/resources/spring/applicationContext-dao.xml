@@ -30,7 +30,7 @@
 		<!-- 1800秒，也就是30分钟 -->
 		<property name="removeAbandonedTimeout" value="1800"/>
 		<!-- 防止sql注入 -->
-		<property name="filters" value="wall"/>
+		<property name="filters" value="stat,wall"/>
 	</bean>
 	
 	<!-- 配置sqlSessionFactory -->

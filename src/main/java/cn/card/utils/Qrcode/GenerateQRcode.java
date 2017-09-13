@@ -6,6 +6,7 @@ import cn.card.domain.User;
 import cn.card.exception.baseException.BaseException;
 import cn.card.utils.propertyReader.PropertyReader;
 import com.swetake.util.Qrcode;
+import net.coobird.thumbnailator.Thumbnails;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 
@@ -23,8 +24,8 @@ import java.util.List;
  */
 public class GenerateQRcode {
 
-    private final static int width_static = 800;
-    private final static int height_static = 483;
+    private final static int WIDTH_STATIC = 800;
+    private final static int HEIGHT_STATIC = 483;
     //读取上传文件目录
     private static String path = PropertyReader.getUploadPath();
 
@@ -43,7 +44,7 @@ public class GenerateQRcode {
      *  So version 40 is 177*177 matrix.
      */
    public static BufferedImage createQrcode(String content, char errorCorrect, int version) throws Exception {
-       //创建Qrcodede的句柄
+       //创建Qrcode的句柄
        Qrcode qrhand = new Qrcode();
        //设置纠错级别
        qrhand.setQrcodeErrorCorrect(errorCorrect);//qrcode官网查询
@@ -96,15 +97,15 @@ public class GenerateQRcode {
        Integer height_origin = background.getHeight();
        Integer width_origin = background.getWidth();
        //将图片等比例放大
-       if(height_origin < height_static || width_origin < width_static){
+       if(height_origin < HEIGHT_STATIC || width_origin < WIDTH_STATIC){
            //比较两个的放大倍数
-           double height_compare = (double)height_static / height_origin;
-           double width_compare = (double)width_static / width_origin;
+           double height_compare = (double) HEIGHT_STATIC / height_origin;
+           double width_compare = (double) WIDTH_STATIC / width_origin;
            double result = height_compare > width_compare ? height_compare : width_compare;
            background = zoomInImage(background, (int)(width_origin * Math.ceil(result)), (int)(height_origin * Math.ceil(result)));
        }
        //将背景图片裁剪
-       background = crop(background,0, 0, width_static, height_static);
+       background = crop(background,0, 0, WIDTH_STATIC, HEIGHT_STATIC);
 
        Graphics2D graphics2D = background.createGraphics();
        Graphics graphics = background.getGraphics();
@@ -169,7 +170,7 @@ public class GenerateQRcode {
 
                height += 5;
                Font font = new Font("黑体",Font.PLAIN,25);
-               height = newLine("", user.getOccupation(),graphics, font, x + 35, height, 15, graphics2D, 0);
+               height = newLine("", user.getOccupation(),graphics, font, x + 35, height, 12, graphics2D, 0);
            }
        }
        //邮箱
@@ -219,7 +220,7 @@ public class GenerateQRcode {
 
                height += 5;
                Font font = new Font("黑体", Font.PLAIN, 20);
-               height = newLine("工作地址:", user.getAddressWork(),graphics, font, x + 55, height, 15, graphics2D, 0);
+               height = newLine("工作地址:", user.getAddressWork(),graphics, font, x + 55, height, 12, graphics2D, 0);
            }
        }
        //家庭地址
@@ -229,7 +230,7 @@ public class GenerateQRcode {
 
                height += 5;
                Font font = new Font("黑体", Font.PLAIN, 20);
-               height = newLine("家庭地址:", user.getAddressHome(), graphics, font, x + 55, height, 15, graphics2D, 0);
+               height = newLine("家庭地址:", user.getAddressHome(), graphics, font, x + 55, height, 12, graphics2D, 0);
            }
        }
        //家庭传真
@@ -263,16 +264,16 @@ public class GenerateQRcode {
                        FontMetrics fm = sun.font.FontDesignMetrics.getMetrics(font);
                        //获取url宽度
                        int stringWidth = fm.stringWidth(user.getUrl());
-                       if(stringWidth > width_static){
+                       if(stringWidth > WIDTH_STATIC){
                            throw new BaseException(HttpStatus.BAD_REQUEST, "url长度过长，无法生成");
                        }
-                       paintUrl(font, graphics2D, graphics, user.getUrl(), width_static - stringWidth - 5, stringWidth);
+                       paintUrl(font, graphics2D, graphics, user.getUrl(), WIDTH_STATIC - stringWidth - 5, stringWidth);
                    }
                    else{
                        FontMetrics fm = sun.font.FontDesignMetrics.getMetrics(font);
                        //获取url宽度
                        int stringWidth = fm.stringWidth(user.getUrl());
-                       if(stringWidth > width_static){
+                       if(stringWidth > WIDTH_STATIC){
                            throw new BaseException(HttpStatus.BAD_REQUEST, "url长度过长，无法生成");
                        }
                        paintUrl(font, graphics2D, graphics, user.getUrl(), 5, stringWidth);
@@ -357,9 +358,10 @@ public class GenerateQRcode {
                     list.add(content.substring(i * z, content.length()));
                 }
                 else {
-                    list.add(content.substring(i * z, i * z + (z-1)));
+                    list.add(content.substring(i * z, i * z + z));
                 }
             }
+
             if(control == 1) {
                 //设置透明背景 提高文字的辨识度
                 graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.3f));
@@ -396,7 +398,7 @@ public class GenerateQRcode {
             y += 30;
         }
 
-        if(y > height_static){
+        if(y > HEIGHT_STATIC){
             throw new BaseException(HttpStatus.BAD_REQUEST , "所选信息过多无法绘制名片");
         }
 
@@ -501,7 +503,7 @@ public class GenerateQRcode {
        user.setPhoneWork(5L);
        user.setPhoneMobile(6L);
        user.setPhoneHome(7L);
-       user.setAddressWork("小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小小");
+       user.setAddressWork("工作地址工作地址工作地址工作地址工作地址工作地址工作地址");
        user.setAddressHome("9");
        user.setFaxHome(62100001L);
        user.setFaxWork(800L);
@@ -512,25 +514,17 @@ public class GenerateQRcode {
         card.setPhoneHome(true);
         card.setAddressWork(true);
         card.setPhoneWork(true);
-        card.setPhoneMobile(false);
+        card.setPhoneMobile(true);
         card.setAddressHome(false);
         card.setFaxHome(false);
-        card.setFaxWork(true);
+        card.setFaxWork(false);
         card.setUrl(2);
         card.setTemplate(2);
-
+        String fileName1 = UUID.randomUUID() + ".jpg";
+        File image1 = new File("E:" + "\\" + fileName1);
         InputStream imagein = new FileInputStream("E:/uploads/template.png");
         BufferedImage background = ImageIO.read(imagein);
 
-        BufferedImage image = createImage(user,card, background);
-
-        String fileName1 = UUID.randomUUID() + ".png";
-        File image1 = new File("E:" + "\\" + fileName1);
-        try {
-            ImageIO.write(image, "png", image1);
-        }catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+        Thumbnails.of(createImage(user,card, background)).scale(1f).outputQuality(0.5f).outputFormat("jpg").toFile(image1);
     }
 }

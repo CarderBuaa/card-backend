@@ -92,4 +92,12 @@ public class CardServiceImpl implements CardService{
         }
         return list.get(0);
     }
+
+    @Override
+    public List<Card> findAllCard() throws Exception {
+        CardExample example = new CardExample();
+        return cardMapper.selectByExample(example);
+    }
+
+
 }

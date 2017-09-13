@@ -12,8 +12,9 @@
     <!-- 配置管理token的切面的bean -->
     <bean id="tokenManager" class="cn.card.utils.access_token.TokenManagerImpl"/>
 
-    <bean id="securityAspect" class="cn.card.controller.advice.SecurityAspect">
+    <bean id="securityAspect" class="cn.card.utils.access_token.advice.SecurityAspect">
         <property name="tokenManager" ref="tokenManager"/>
+        <property name="userService" ref="userService"/>
     </bean>
     <!-- 配置切面的信息 -->
     <aop:config>

@@ -1,8 +1,10 @@
 package cn.card.controller;
 
+import cn.card.domain.Card;
 import cn.card.domain.User;
 import cn.card.exception.UserNotFoundException;
 import cn.card.exception.baseException.BaseException;
+import cn.card.service.CardService;
 import cn.card.service.UserService;
 import cn.card.utils.IgnoreSecurity.IgnoreSecurity;
 import cn.card.utils.access_token.TokenManager;
@@ -28,11 +30,11 @@ import java.util.List;
 public class ManageController {
 
     private UserService userService;
-    private TokenManager tokenManager;
+    private CardService cardService;
 
     @Autowired
-    public void setTokenManager(TokenManager tokenManager) {
-        this.tokenManager = tokenManager;
+    public void setCardService(CardService cardService) {
+        this.cardService = cardService;
     }
 
     @Autowired
@@ -41,25 +43,12 @@ public class ManageController {
     }
 
     @RequestMapping(value = "/manage/allUserInfo", method = RequestMethod.GET)
-    public @ResponseBody List<User> getAllUserInfo(HttpServletRequest request) throws Exception{
-        //获取token的username
-        String token = request.getHeader("Access-Token");
-        String username_token = tokenManager.getUsername(token);
-
-        //设置查询条件
-        User user = new User();
-        user.setUsername(username_token);
-        User check = userService.findUserByUserName(user);
-
-        if(check == null){
-            throw new UserNotFoundException();
-        }
-
-        //如果当前用户不是管理员
-        if(check.getRole() == null || check.getRole() != 1){
-            throw new BaseException(HttpStatus.UNAUTHORIZED, "当前用户无权限访问该页面");
-        }
-
+    public @ResponseBody List<User> getAllUserInfo() throws Exception{
         return userService.findAllUser();
+    }
+
+    @RequestMapping(value = "/manage/allCardInfo", method = RequestMethod.GET)
+    public @ResponseBody List<Card> getAllCardInfo() throws Exception{
+        return cardService.findAllCard();
     }
 }

@@ -174,9 +174,9 @@ public class CardController {
     }
 
 
-    //用于修改已生成名片的数据
+    //用于修改已生成名片的数据 因为springMVC对PUT FORM支持不好 所以采用POST方法
     @RequestMapping(value = "/card/{card_id}", method = RequestMethod.POST)
-    public void putCard(HttpServletRequest request, HttpServletResponse response,
+    public void putCard(HttpServletRequest request,HttpServletResponse response,
                         Card card, //前端返回的名片信息
                         @PathVariable("card_id") Integer card_id,
                         @RequestParam(value = "image", required = false) MultipartFile image,//接收前端的图片文件
@@ -213,6 +213,8 @@ public class CardController {
             image.transferTo(new File(path + "/" + filename));
             //保存文件名
             card.setBackground(filename);
+        }else {
+            card.setBackground(check.getBackground());
         }
 
         if(logoImage != null){
@@ -232,27 +234,15 @@ public class CardController {
             if(card.getLogoY() == null){
                 card.setLogoY(0D);
             }
+        }else {
+            if(check.getLogo() != null) {
+                card.setLogo(check.getLogo());
+                card.setLogoX(check.getLogoX());
+                card.setLogoY(check.getLogoY());
+            }
         }
         //card的name始终为true
         card.setName(true);
-
-        //删除背景文件
-        if(check.getBackground() != null && !check.getBackground().equals("template.png")){
-            //从check中获取背景图片路径
-            String backgroundPath = path + "/" + check.getBackground();
-            File backgroundFile = new File(backgroundPath);
-            if(backgroundFile.exists()){
-                backgroundFile.delete();
-            }
-        }
-        //删除logo文件
-        if(check.getLogo() != null){
-            String logoPath = path + "/" + check.getLogo();
-            File logoFile = new File(logoPath);
-            if(logoFile.exists()){
-                logoFile.delete();
-            }
-        }
 
         //查找user对象
         User userFind = new User();
@@ -260,8 +250,14 @@ public class CardController {
 
         User user = userService.findUserByUserName(userFind);
 
+        String backgroundPath;
         //获取背景图片路径
-        String backgroundPath = path + "/" + card.getBackground();
+        if(card.getBackground() != null) {
+            backgroundPath = path + "/" + card.getBackground();
+        }
+        else{
+            backgroundPath = path + "/" + check.getBackground();
+        }
 
         //判断背景图片是否存在
         File back = new File(backgroundPath);
@@ -274,8 +270,32 @@ public class CardController {
         BufferedImage background =ImageIO.read(new FileInputStream(back));
         //生成图片
         BufferedImage cardImage = GenerateQRcode.createImage(user, card, background);
-        //更新用户信息
+        //更新名片信息
         cardService.updateCardInfo(card);
+
+        //更新完成后删除背景文件
+        if(check.getBackground() != null && !check.getBackground().equals("template.png")){
+            //只有有新上传的文件才去删除原来的背景图片
+            if(!check.getBackground().equals(card.getBackground())) {
+                //从check中获取背景图片路径
+                String backgroundPathOrigin = path + "/" + check.getBackground();
+                File backgroundFile = new File(backgroundPathOrigin);
+                if (backgroundFile.exists()) {
+                    backgroundFile.delete();
+                }
+            }
+        }
+        //删除logo文件
+        if(check.getLogo() != null){
+            //只有新上传logo才删除原来的logo
+            if(!check.getLogo().equals(card.getLogo())) {
+                String logoPath = path + "/" + check.getLogo();
+                File logoFile = new File(logoPath);
+                if (logoFile.exists()) {
+                    logoFile.delete();
+                }
+            }
+        }
 
         Jedis jedis = null;
         //修改信息后 保存在redis中的名片信息应该删除 同时将新的图片信息保存
@@ -291,7 +311,6 @@ public class CardController {
             byte[] result = out.toByteArray();
             //将字节数组放入redis中
             jedis.set(("card_" + card_id.toString()).getBytes(), result);
-
         }
         //释放资源
         finally {
@@ -301,6 +320,7 @@ public class CardController {
             background.flush();
             cardImage.flush();
         }
+        response.setStatus(HttpStatus.OK.value());
     }
 
 
@@ -385,7 +405,6 @@ public class CardController {
             //redis中已经缓存了图片
             if (jedis.exists(("card_" + card_id.toString()).getBytes())) {
 
-                response.reset();
                 response.setContentType("image/png");
                 byte[] response_image = jedis.get(("card_" + card_id.toString()).getBytes());
                 //如果需要对图片压缩用此可方便实现
@@ -405,7 +424,6 @@ public class CardController {
                     throw new BackgroundImageNotFound();
                 }
 
-                response.reset();
                 response.setContentType("image/png");
 
                 //如果找到背景图片 讲背景图片放入内存中
@@ -433,6 +451,7 @@ public class CardController {
             //释放redis资源
             if(jedis != null)
                 jedis.close();
+            response.setStatus(HttpStatus.OK.value());
         }
     }
 }

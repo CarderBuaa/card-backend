@@ -54,7 +54,7 @@ public class SecurityAspect {
         HttpServletRequest request = sra.getRequest();
         String token = request.getHeader(tokenName);
 
-        //如果访问对象的令牌不对，则报错
+        //访问对象的令牌不对
         if (token == null || !tokenManager.checkToken(token)) {
             throw new TokenException();
         }
@@ -65,7 +65,7 @@ public class SecurityAspect {
         userFind.setUsername(usernameToken);
         User user = userService.findUserByUserName(userFind);
 
-        //实现基于角色的权限管理
+        //实现权限管理
         //用户不存在
         if(user == null){
           throw new UserNotFoundException();

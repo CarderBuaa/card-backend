@@ -93,6 +93,7 @@ public class CardServiceImpl implements CardService{
         return list.get(0);
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     @Override
     public List<Card> findAllCard() throws Exception {
         CardExample example = new CardExample();

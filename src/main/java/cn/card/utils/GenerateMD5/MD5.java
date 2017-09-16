@@ -57,10 +57,6 @@ public class MD5 {
         }
         return md5str.toString().toUpperCase();
     }
-    
-    @Test
-    public void testMD5(){
-    }
 
 }
 

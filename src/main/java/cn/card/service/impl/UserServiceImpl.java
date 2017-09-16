@@ -118,6 +118,7 @@ public class UserServiceImpl implements UserService {
 		return list.get(0);
 	}
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	@Override
 	public List<User> findAllUser() throws Exception {
 
@@ -144,5 +145,24 @@ public class UserServiceImpl implements UserService {
 		user.setRole(1);
 		userMapper.insertSelective(user);
 	}
+
+	//只针对email和username进行模糊匹配
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Override
+    public List<User> findUserByUsernameAndEmail(User user) throws Exception {
+
+	    UserExample example = new UserExample();
+	    UserExample.Criteria criteria = example.createCriteria();
+
+        //使用mybatis逆向工程自带的模糊匹配
+	    if(user.getUsername() != null && !user.getUsername().equals("")){
+            criteria.andUsernameLike("%" + user.getUsername() + "%");
+        }
+        if(user.getEmail() != null && !user.getEmail().equals("")){
+	        criteria.andEmailLike("%" + user.getEmail() + "%");
+        }
+
+        return userMapper.selectByExample(example);
+    }
 
 }

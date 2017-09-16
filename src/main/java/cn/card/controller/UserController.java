@@ -110,26 +110,19 @@ public class UserController {
 			throw new BaseException(HttpStatus.BAD_REQUEST, allErrors.get(0).getDefaultMessage());
 		}
 
-		//获取token的username
-		String token = request.getHeader("Access-Token");
-		String username_token = tokenManager.getUsername(token);
-
-		User find = new User();
-		find.setUsername(username_token);
-		User admin = userService.findUserByUserName(find);
-
-		//当前用户不是管理员
-		if(admin == null || admin.getRole() != 1) {
-			user.setRole(0);
-		}
-
 		//新建查询对象
 		user.setUsername(username);
 		//寻找用户
 		User check = userService.findUserByUserName(user);
-		//用户不存在
-		if (check == null) {
-			throw new UserNotFoundException();
+
+        //用户不存在
+        if (check == null) {
+            throw new UserNotFoundException();
+        }
+
+		//当前用户不是管理员
+		if(check.getRole() != 1) {
+			user.setRole(0);
 		}
 
         userService.updateUserInfo(user);

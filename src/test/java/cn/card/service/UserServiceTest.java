@@ -79,4 +79,19 @@ public class UserServiceTest {
 		System.out.println(userService.findAllUser());
 
 	}
+
+	@Test
+    public void testQuery() throws Exception{
+        UserService userService = (UserService) applicationContext.getBean("userService");
+
+        //构建测试条件
+        User user = new User();
+//        user.setUsername("s");
+
+        user.setEmail("@qq.com");
+
+        List<User> list = userService.findUserByUsernameAndEmail(user);
+
+        System.out.println(list);
+    }
 }

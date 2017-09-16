@@ -1,5 +1,7 @@
 package cn.card.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Card {
     private Integer id;
 
@@ -7,8 +9,10 @@ public class Card {
 
     private Integer template;
 
+    @JsonIgnore
     private String background;
 
+    @JsonIgnore
     private String logo;
 
     private Double logoX;

@@ -20,4 +20,6 @@ public interface UserService {
 	List<User> findAllUser() throws Exception;
 
 	void createNewAdmin(User user) throws Exception;
+
+    List<User> findUserByUsernameAndEmail(User user) throws Exception;
 }

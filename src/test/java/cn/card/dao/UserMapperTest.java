@@ -80,4 +80,15 @@ public class UserMapperTest {
 		System.out.println(list);
 	}
 
+	@Test
+    public void test() throws Throwable {
+        UserMapper userMapper = (UserMapper) applicationContext.getBean("userMapper");
+
+        UserExample userExample = new UserExample();
+
+        List<User> list = userMapper.selectByExample(userExample);
+
+        System.out.println(list);
+    }
+
 }

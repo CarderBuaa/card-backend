@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -47,8 +48,21 @@ public class ManageController {
         return userService.findAllUser();
     }
 
-    @RequestMapping(value = "/manage/allCardInfo", method = RequestMethod.GET)
-    public @ResponseBody List<Card> getAllCardInfo() throws Exception{
-        return cardService.findAllCard();
+    //进行username和email的模糊匹配
+    @RequestMapping(value = "/manage/query", method = RequestMethod.POST)
+    public @ResponseBody List<Card> fuzzyQuery(User user) throws Exception{
+
+        List<User> userList = userService.findUserByUsernameAndEmail(user);
+
+        List<Card> cardList = new LinkedList<>();
+
+        for (User userTemp: userList){
+            Card cardTemp = new Card();
+            cardTemp.setUsername(userTemp.getUsername());
+
+            cardList.addAll(cardService.findRecordList(cardTemp));
+        }
+
+        return cardList;
     }
 }

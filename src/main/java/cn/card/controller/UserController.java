@@ -99,7 +99,6 @@ public class UserController {
 	@RequestMapping(value="/user/{username}",method= RequestMethod.PUT)
 	public void editUserController(@PathVariable("username") String username,
 								   @RequestBody @Validated User user, BindingResult result,
-								   HttpServletRequest request,
 								   HttpServletResponse response) throws Exception {
 		//对中文路径编码问题的处理
 		username = new String(username.getBytes("ISO-8859-1"), "utf8");

@@ -333,16 +333,24 @@ public class CardController {
         String token = request.getHeader("Access-Token");
         String username = tokenManager.getUsername(token);
 
+        //查询用户权限
+        User find = new User();
+        find.setUsername(username);
+        User checkUser = userService.findUserByUserName(find);
+
         //设置查询条件
         Card card = new Card();
         //必须设置cardCustom的ID
         card.setId(card_id);
         card.setUsername(username);
 
-        Card check = cardService.findCardByIDAndUsername(card);
-        //如果找不到ID的名片信息 就抛出名片不存在异常
-        if(check == null){
-            throw new CardNotFoundException();
+        Card check ;
+        if(checkUser.getRole() != 1) {
+            check = cardService.findCardByIDAndUsername(card);
+        }
+        else{
+            //管理员可直接访问并删除所有人的card
+            check = cardService.findCardByID(card);
         }
 
         //删除redis中名片信息

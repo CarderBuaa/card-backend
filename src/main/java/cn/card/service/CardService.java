@@ -28,4 +28,6 @@ public interface CardService {
 
     //返回所有的名片信息
     List<Card> findAllCard() throws Exception;
+
+    Card findCardByID(Card card) throws Exception;
 }

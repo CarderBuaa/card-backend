@@ -100,5 +100,16 @@ public class CardServiceImpl implements CardService{
         return cardMapper.selectByExample(example);
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    @Override
+    public Card findCardByID(Card card) throws Exception {
+        Card check = cardMapper.selectByPrimaryKey(card.getId());
+        //找不到名片
+        if(check == null){
+            throw new CardNotFoundException();
+        }
+        return check;
+    }
+
 
 }
